@@ -1,0 +1,26 @@
+{
+  "name": "ViswaAccountsBE",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@hapi/joi": "^17.1.1",
+    "bcrypt": "^4.0.1",
+    "cors": "^2.8.5",
+    "csv-parser": "^2.3.2",
+    "express": "^4.17.1",
+    "express-async-errors": "^3.1.1",
+    "joi-objectid": "^3.0.1",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.15",
+    "moment": "^2.24.0",
+    "mongoose": "^5.9.10",
+    "multer": "^1.4.2"
+  }
+}
