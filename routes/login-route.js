@@ -10,13 +10,13 @@ router.post("/", async function(req, res){
 
 		if(error)return res.status(400).send(error.details[0].message);
 
-		let user = await UserModel.findOne({'username': req.body.username, 'status': UserStatus.Active});
+		let user = await UserModel.findOne({'loginID': req.body.loginID, 'status': UserStatus.Active});
 
-		if(!user)return res.status(400).send("Invalid username or password");
+		if(!user)return res.status(400).send("Invalid login ID or password");
 
 		let isValid = await bcrypt.compare(req.body.password, user.password);
 
-		if(!isValid)return res.status(400).send("Invalid username or password");
+		if(!isValid)return res.status(400).send("Invalid login ID or password");
 
         const token = user.generateAuthToken();
 

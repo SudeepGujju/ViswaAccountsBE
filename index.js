@@ -6,7 +6,7 @@ const app = express();
 
 global.tokenSecret  = "TokenSecret";
 global.authHeader   = "X-Auth-Token";
-global.collections  = Object.freeze({ account: "accounts", bank: "banks", user: "users", group: "groups"});
+global.collections  = Object.freeze({ account: "accounts", bank: "banks", user: "users", group: "groups", product: "products"});
 global.basePath     = __dirname;
 global.uploadPath   = __dirname+"/uploads";
 global.tempPath     = __dirname+"/temp";

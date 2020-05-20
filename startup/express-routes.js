@@ -8,6 +8,7 @@ const loginRoutes   = require('../routes/login-route');
 const bankRoutes   = require('../routes/bank-route');
 const fileRoutes   = require('../routes/file-route');
 const playRoutes   = require('../routes/play-ground');
+const productRoutes = require('../routes/product-route');
 const auth          = require('../middlewares/auth');
 
 require('express-async-errors');
@@ -24,6 +25,7 @@ module.exports = function(app){
     app.use(basePath+"/"+"user",    auth, userRoutes);
     // app.use(basePath+"/"+"user",    userRoutes);
     app.use(basePath+"/"+"group",   auth, groupRoutes);
+    app.use(basePath+"/"+"product",   auth, productRoutes);
     app.use(basePath+"/"+"account", auth, accountRoutes);
     app.use(basePath+"/"+"reports", auth, reportRoutes);
     app.use(basePath+"/"+"bank",    auth, bankRoutes);

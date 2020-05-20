@@ -52,7 +52,11 @@ router.get("/fileData", async function(req, res){
                 }
                 else if(req.query.reportType == "GSTR2A")
                 {
-                    response = fnPrcsDataForGST2R(results);
+                    response = fnPrcsDataForGSTRA(results);
+                }
+                else if(req.query.reportType == "TAXWISE")
+                {
+                    response = fnPrcsDataTaxWise(results);
                 }
                 else
                 {
@@ -115,7 +119,7 @@ function groupBy(records, keysArr)
     return processedData;
 }
 
-function fnPrcsDataForGST2R(records)
+function fnPrcsDataForGSTRA(records)
 {
     records = records
                 .filter( x => x["GSTIN"])
@@ -183,6 +187,76 @@ function fnPrcsDataForGSTSummary(records)
     records = groupBy(records, ["GSTIN"]);
 
     return records;
+}
+let i = 0;
+function fnPrcsDataTaxWise(records)
+{
+    let processedData = [];
+
+    let helper = {}
+    processedData = records.reduce((result, current)=>{
+
+        if(current["GSTIN"] == "")
+            return result;
+
+        const keys = [];
+        ["GSTIN", "INVNO", "INVDATE"].forEach((v,i)=>{
+            keys.push(current[v]);
+        });
+
+        const key = keys.join(" - ");
+
+        let vTAXABUL = (parseFloat(current.TAXABUL)).toFixed(2);
+        let vGST     = (parseFloat(current.IGST) + parseFloat(current.CGST) + parseFloat(current.SGST) ).toFixed(2);
+        let vTax     = parseInt(current.TAX);
+
+        delete current["STATE"];
+        delete current["REV"];
+        delete current["IGST"];
+        delete current["CGST"];
+        delete current["SGST"];
+        delete current["CSS"];
+        delete current["STATUS"];
+        delete current["MON"];
+        delete current["TAX"];
+        delete current["TAXABUL"];
+
+        if(!helper[key])
+        {
+            helper[key] = Object.assign({}, current);
+
+            helper[key]["0%"]   = "0.00";
+            helper[key]["5%"]   = "0.00";
+            helper[key]["12%"]  = "0.00";
+            helper[key]["18%"]  = "0.00";
+            helper[key]["28%"]  = "0.00";
+
+            helper[key]["GST"]   = vGST;
+
+            helper[key]["INVAMT"]   = parseFloat(current.INVAMT).toFixed(2);
+
+            result.push(helper[key]);
+        }
+        else
+        {
+            helper[key]["GST"]   = (parseFloat(helper[key]["GST"]) + parseFloat(vGST) ).toFixed(2);
+        }
+
+        //Updating value based object reference.
+        switch(vTax)
+        {
+            case 0: helper[key]["0%"] = vTAXABUL; break;
+            case 5: helper[key]["5%"] = vTAXABUL; break;
+            case 12: helper[key]["12%"] = vTAXABUL; break;
+            case 18: helper[key]["18%"] = vTAXABUL; break;
+            case 28: helper[key]["28%"] = vTAXABUL; break;
+        }
+
+        return result;
+
+    }, []);
+
+    return processedData;
 }
 
 module.exports = router;

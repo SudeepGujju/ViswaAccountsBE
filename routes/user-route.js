@@ -41,8 +41,8 @@ router.post("/", async function (req, res) {
         if (error)
             return res.status(400).send(error.details[0].message);
 
-        if (!await isUsernameAvailabile(req.body.username))
-            return res.status(400).send("username already exists");
+        if (!await isLoginIDAvailabile(req.body.loginID))
+            return res.status(400).send("Login ID already exists");
 
         let user = new UserModel(req.body);
 
@@ -141,15 +141,15 @@ router.post("/permissions/:id", async function (req, res) {
 
 module.exports = router;
 
-async function isUsernameAvailabile(username) {
+async function isLoginIDAvailabile(loginID) {
 
     let bUserAvail = true;
 
     try {
-        if (username)
-            username = username.trim().toUpperCase();
+        if (loginID)
+            loginID = loginID.trim().toUpperCase();
 
-        let user = await UserModel.findOne({ 'username': username });
+        let user = await UserModel.findOne({ 'loginID': loginID });
 
         if (user)
             bUserAvail = false;//Not Available

@@ -7,7 +7,14 @@ const UserStatus = Object.freeze({ Active: 1, Inactive: 2 });
 const Schema = mongoose.Schema;
 
 const userCollectionSchema = new Schema({
-    username: {
+    username:{
+        type: String,
+        minlength: 1,
+        maxlength: 30,
+        required: true,
+        uppercase: true
+    },
+    loginID: {
         type: String,
         minlength: 3,
         maxlength: 15,
@@ -21,6 +28,17 @@ const userCollectionSchema = new Schema({
         minlength: 8,
         maxlength: 1024,
         required: true
+    },
+    phone: {
+        type: String,
+        // minlength: 10,
+        maxlength: 10,
+        validate: {
+            validator: function(val){
+                return val.length >= 10 || val.length === 0
+            },
+            message: () => 'phone cannot be less than 10 numbers'
+        }
     },
     finYear:{
         type: String,
@@ -165,8 +183,10 @@ userCollectionSchema.methods.generateAuthToken = function () {
 };
 
 const schema = Joi.object({
-    username: Joi.string().min(3).max(15).required(),
-    password: Joi.string().min(8).max(50).required(),
+    username: Joi.string().min(1).max(30).required(),
+    loginID: Joi.string().min(3).max(15).required(),
+    phone: Joi.string().allow('').min(10).max(10),
+    password: Joi.string().min(8).max(15).required(),
     finYear: Joi.string().required(),
     status: Joi.number().required().valid(UserStatus.Active, UserStatus.Inactive)
 });
@@ -205,8 +225,8 @@ const permSchema = Joi.object({
 });
 
 const loginSchema = Joi.object({
-    username: Joi.string().min(3).max(15).required(),
-    password: Joi.string().min(8).max(50).required()
+    loginID: Joi.string().required(),
+    password: Joi.string().required()
 });
 
 function validate(data) {
