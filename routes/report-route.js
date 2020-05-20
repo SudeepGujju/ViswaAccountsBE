@@ -235,11 +235,15 @@ function fnPrcsDataTaxWise(records)
 
             helper[key]["INVAMT"]   = parseFloat(current.INVAMT).toFixed(2);
 
+            helper[key]["ROUNDING"] = (parseFloat(current.INVAMT) - parseFloat(vGST) - parseFloat(vTAXABUL)).toFixed(2);
+
             result.push(helper[key]);
         }
         else
         {
             helper[key]["GST"]   = (parseFloat(helper[key]["GST"]) + parseFloat(vGST) ).toFixed(2);
+
+            helper[key]["ROUNDING"] = (parseFloat(helper[key]["ROUNDING"]) - parseFloat(vGST) - parseFloat(vTAXABUL)).toFixed(2);
         }
 
         //Updating value based object reference.
