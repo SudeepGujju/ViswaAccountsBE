@@ -29,7 +29,8 @@ router.post("/", async function(req, res){
     }
 	catch(e)
 	{
-        const error = parseError(ex);
+		console.log(e);
+        const error = parseError(e);
         return res.status(error.code).send(error.message);
 	}
 });

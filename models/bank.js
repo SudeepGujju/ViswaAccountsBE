@@ -26,7 +26,7 @@ const bankCollectionSchema = new Schema({
 
 				return validateRefFld(vUserId, mongoose.model(global.collections.account), 'code', v);
 			},
-            message: props => { console.log(props); return `${props.value} is not a valid group`}
+            message: props => { console.log(props); return `${props.value} is not a valid account`}
 		}
     },
     toCode: {
@@ -49,7 +49,7 @@ const bankCollectionSchema = new Schema({
 
 				return validateRefFld(vUserId, mongoose.model(global.collections.account), 'code', v);
 			},
-            message: props => { console.log(props); return `${props.value} is not a valid group`}
+            message: props => { console.log(props); return `${props.value} is not a valid account`}
 		}
     },
     SL: {

@@ -178,7 +178,7 @@ userCollectionSchema.methods.generateAuthToken = function () {
     return jwt.sign(
         { _id: this._id, username: this.username },
         global.tokenSecret,
-        { expiresIn: '2h' }
+        { expiresIn: '1h' }
     );
 };
 

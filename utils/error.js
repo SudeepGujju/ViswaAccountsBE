@@ -11,6 +11,8 @@ module.exports.parseError = function(ex){
 
         if(ex.code == 11000)
             error.message = 'Duplicate entry';
+        else if(ex.code == 13)
+            error.message = 'DB Authentication failed';
         else
             error.message = ex.message;
     }

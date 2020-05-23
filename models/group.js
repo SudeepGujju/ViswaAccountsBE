@@ -49,13 +49,12 @@ groupCollectionSchema.pre('findOneAndRemove', async function(){
 
     if(count && count > 0)
         throw new mongoose.Error('Group is linked with other records to delete.');
-})
+});
 
 const schema = Joi.object({
     code: Joi.string().max(10).required(),
     name: Joi.string().max(50).required(),
-    grpType: Joi.number().required().valid(GroupType.Trading, GroupType.ProfitAndLoss, GroupType.BalanceSheet),
-    // userId: Joi.objectId().required()
+    grpType: Joi.number().required().valid(GroupType.Trading, GroupType.ProfitAndLoss, GroupType.BalanceSheet)
 });
 
 function validate(group){

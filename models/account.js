@@ -2,6 +2,7 @@ const Joi = require('@hapi/joi');
 const mongoose = require("mongoose");
 const { validateRefId, validateRefFld } = require('../utils/model-validators');
 const { BankModel } = require('./bank');
+const { InventoryModel } = require('./inventory');
 
 const Schema = mongoose.Schema;
 
@@ -121,7 +122,12 @@ accountCollectionSchema.pre('findOneAndRemove', async function(){
 
     const account = await this.findOne().select('code userId').lean();
 
-    const count = await BankModel.countDocuments({ userId: account.userId, $or: [ {fromCode: account.code}, {toCode: account.code} ]});//{userId: account.userId}
+    let count = await BankModel.countDocuments({ userId: account.userId, $or: [ {fromCode: account.code}, {toCode: account.code} ]});//{userId: account.userId}
+
+    if(count && count > 0)
+        throw new mongoose.Error('Account is linked with other records to delete.');
+
+    count = await InventoryModel.countDocuments({ userId: account.userId, $or: [ {fromCode: account.code}, {toCode: account.code} ]});
 
     if(count && count > 0)
         throw new mongoose.Error('Account is linked with other records to delete.');
