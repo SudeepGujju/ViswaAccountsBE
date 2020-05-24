@@ -16,7 +16,7 @@ const mongooseOptions = {
 //mongodb://youruser:yourpassword@localhost/yourdatabase
 
 // const url = "mongodb://localhost:27017/";
-const url = "mongodb://viswaaccounts:viswa.2626@localhost:27017/";
+const url = "mongodb://viswa:viswa.2626@localhost:27017/";
 
 const db = "viswaaccounts";
 const dbURI = url+db;

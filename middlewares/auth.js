@@ -14,7 +14,14 @@ module.exports = function(req, res, next){
         const decoded = jwt.verify(token, global.tokenSecret);
 		req.user = decoded;
 
-		next();
+        let tokeniat = new Date(decoded.iat * 1000).getTime();
+
+        if(tokeniat < global.appStartTime.getTime())
+        {
+            throw Error("Invalid token");
+        }
+
+        next();
     }
     catch(ex)
     {

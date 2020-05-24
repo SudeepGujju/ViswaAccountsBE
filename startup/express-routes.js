@@ -4,7 +4,7 @@ const userRoutes    = require('../routes/user-route');
 const reportRoutes  = require('../routes/report-route');
 const groupRoutes   = require('../routes/group-route');
 const accountRoutes   = require('../routes/account-route');
-const loginRoutes   = require('../routes/login-route');
+const authRoutes   = require('../routes/auth-route');
 const bankRoutes   = require('../routes/bank-route');
 const fileRoutes   = require('../routes/file-route');
 const productRoutes = require('../routes/product-route');
@@ -21,7 +21,7 @@ module.exports = function(app){
 
     // app.use((req, res, next) => { console.log(req.method); next(); })
 
-    app.use(basePath+"/"+"login",   loginRoutes);
+    app.use(basePath+"/"+"auth",   authRoutes);
     app.use(basePath+"/"+"user",    auth, userRoutes);
     // app.use(basePath+"/"+"user",    userRoutes);
     app.use(basePath+"/"+"group",   auth, groupRoutes);

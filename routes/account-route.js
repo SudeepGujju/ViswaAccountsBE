@@ -39,6 +39,7 @@ router.get("/:id", async function (req, res) {
 router.get("/", async function (req, res) {
 
     try {
+
         const accounts = await AccountModel.find({ userId: req.user._id }).select('-userId');
 
         return res.status(200).send(accounts);
