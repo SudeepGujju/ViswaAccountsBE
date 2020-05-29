@@ -27,7 +27,10 @@ router.post("/login", async function(req, res){
 
 		delete userDetails.password;
 
-		let tokens = generateTokens(userDetails._id, userDetails.username);
+		userDetails.finYearStart = new Date(parseInt(userDetails.finYear.split('-')[0], 10), 3, 1);
+    	userDetails.finYearEnd = new Date(parseInt(userDetails.finYear.split('-')[1], 10), 2, 31);
+
+		let tokens = generateTokens(userDetails);
 
 		userDetails.accessToken = tokens.accessToken;
 		userDetails.refreshToken = tokens.refreshToken;
@@ -41,6 +44,19 @@ router.post("/login", async function(req, res){
         const error = parseError(e);
         return res.status(error.code).send(error.message);
 	}
+});
+
+router.post("/logout", async function(req, res){
+
+	const refreshToken = req.body.refreshToken;
+
+	if(refreshToken in global.userTokens)
+	{
+		delete global.userTokens[refreshToken];
+	}
+
+	return res.status(200).send("Logged out successfully.");
+
 });
 
 router.post("/refresh", async function(req, res){
@@ -75,27 +91,27 @@ router.post("/refresh", async function(req, res){
 		}
 		else
 		{
-			return res.status(401).send("session expired. Please relogin.");
+			return res.status(401).send("Session expired. Please relogin.");
 		}
 	}
 	else
 	{
-		return res.status(401).send("session expired. Please relogin.");
+		return res.status(401).send("Session expired. Please relogin.");
 	}
 
 });
 
-function generateTokens(id, username)
+function generateTokens(user)
 {
 	const refreshToken = crypto.randomBytes(16).toString('hex');
 
 	const accessToken = jwt.sign(
-							{_id: id, username},
+							{_id: user._id, username: user.username, finYearStart: user.finYearStart, finYearEnd: user.finYearEnd},
 							global.tokenSecret,
 							{ expiresIn: '15m' }//(15 * 60 * 1000)ms; 15 - mins
 						);
 
-	global.userTokens[refreshToken] = { payload: {_id: id, username}, accessToken };
+	global.userTokens[refreshToken] = { payload: {_id: user._id, username: user.username, finYearStart: user.finYearStart, finYearEnd: user.finYearEnd}, accessToken };
 
 	return {accessToken, refreshToken};
 }

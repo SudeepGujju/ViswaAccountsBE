@@ -142,7 +142,7 @@ router.post("/upload", upload.single('file'), async function(req, res){
 
         deleteFile(req.file.path);
 
-        data = await parseCSVForGroup(data);
+        data = parseCSVForGroup(data);
 
         if(data.length > 0)
         {
@@ -175,7 +175,7 @@ router.post("/upload", upload.single('file'), async function(req, res){
             else if(data.length == successCount)
             {
                 status = 0;
-                message = "Groups created successfully";
+                message = "Groups created successfully.";
             }
             else
             {

@@ -14,6 +14,7 @@ const app = express();
     group: "groups",
     product: "products",
     inventory: "inventories",
+    generalVoucher: "general-vouchers"
   });
   global.basePath = __dirname;
   global.uploadPath = __dirname + "/uploads";

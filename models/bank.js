@@ -94,18 +94,19 @@ const bankCollectionSchema = new Schema({
 
 bankCollectionSchema.index( {userId: 1, date: 1 , SL: 1}, {unique: true});
 
-const schema = Joi.object({
-    fromCode: Joi.string().max(10).required(),
-    toCode: Joi.string().max(10).required(),
-    SL: Joi.number().required(),
-    date: Joi.date().required(),
-    chNo: Joi.string().allow('').max(10),
-    desc: Joi.string().max(50).required(),
-    receipt: Joi.number(),
-    payment: Joi.number()
-});
+function validate(record, finYearStart, finYearEnd){
 
-function validate(record){
+    const schema = Joi.object({
+        fromCode: Joi.string().max(10).required(),
+        toCode: Joi.string().max(10).required(),
+        SL: Joi.number().required(),
+        date: Joi.date().min(finYearStart).max(finYearEnd).required(),
+        chNo: Joi.string().allow('').max(10),
+        desc: Joi.string().max(50).required(),
+        receipt: Joi.number(),
+        payment: Joi.number()
+    });
+
     return schema.validate(record);
 }
 

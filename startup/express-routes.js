@@ -9,6 +9,7 @@ const bankRoutes   = require('../routes/bank-route');
 const fileRoutes   = require('../routes/file-route');
 const productRoutes = require('../routes/product-route');
 const inventoryRoutes = require('../routes/inventory-route');
+const genVouchRoutes = require('../routes/general-voucher-route');
 const auth          = require('../middlewares/auth');
 
 require('express-async-errors');
@@ -19,7 +20,7 @@ module.exports = function(app){
 
     app.use(express.static(path.join(__dirname, "../dist")));
 
-    // app.use((req, res, next) => { console.log(req.method); next(); })
+    // app.use((req, res, next) => { console.log(req.method, req.url); next(); })
 
     app.use(basePath+"/"+"auth",   authRoutes);
     app.use(basePath+"/"+"user",    auth, userRoutes);
@@ -30,6 +31,7 @@ module.exports = function(app){
     app.use(basePath+"/"+"reports", auth, reportRoutes);
     app.use(basePath+"/"+"bank",    auth, bankRoutes);
     app.use(basePath+"/"+"inventory", auth, inventoryRoutes);
+    app.use(basePath+"/"+"general-voucher", auth, genVouchRoutes);
     app.use(basePath+"/"+"file",    auth, fileRoutes);
 
     app.get("/*", function (req, res, next) {

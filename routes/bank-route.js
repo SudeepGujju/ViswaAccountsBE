@@ -94,7 +94,7 @@ router.post("/", async function (req, res) {
         if(req.body.date)
             req.body.date = parseDate(req.body.date);
 
-        const { error } = validate(req.body);
+        const { error } = validate(req.body, req.user.finYearStart, req.user.finYearEnd);
 
         if (error)
             return res.status(400).send(error.details[0].message);
@@ -121,7 +121,7 @@ router.put("/:id", async function (req, res) {
         if(req.body.date)
             req.body.date = parseDate(req.body.date);
 
-        const { error } = validate(req.body);
+        const { error } = validate(req.body, req.user.finYearStart, req.user.finYearEnd);
 
         if (error)
             return res.status(400).send(error.details[0].message);

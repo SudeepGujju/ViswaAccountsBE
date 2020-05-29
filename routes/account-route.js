@@ -40,7 +40,7 @@ router.get("/", async function (req, res) {
 
     try {
 
-        const accounts = await AccountModel.find({ userId: req.user._id }).select('-userId');
+        const accounts = await AccountModel.find({ userId: req.user._id }).select('code firmName town proprietor phone gst groupCode opngBalAmt _id');
 
         return res.status(200).send(accounts);
     }
@@ -153,7 +153,7 @@ router.post("/upload", upload.single('file'), async function(req, res){
 
         deleteFile(req.file.path);
 
-        data = await parseCSVForAccounts(data);
+        data = parseCSVForAccounts(data);
 
         if(data.length > 0)
         {
@@ -186,7 +186,7 @@ router.post("/upload", upload.single('file'), async function(req, res){
             else if(data.length == successCount)
             {
                 status = 0;
-                message = "Accounts created successfully";
+                message = "Accounts created successfully.";
             }
             else
             {

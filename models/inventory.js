@@ -21,17 +21,6 @@ const inventoryCollectionSchema = new Schema({
         type: Date,
         required: true
     },
-    userId: {
-        type: Schema.Types.ObjectId,
-        required: true,
-        ref: global.collections.user,
-        validate: {
-			validator: function(v) {
-				return validateRefId(mongoose.model(global.collections.user), v);
-			},
-            message: props => { console.log(props); return `${props.value} is not a valid user id!`}
-		}
-    },
     cashRcredit: {
         type: Number,
         enum: [CashRCredit.Cash, CashRCredit.Credit],
@@ -144,36 +133,48 @@ const inventoryCollectionSchema = new Schema({
     totalInvcAmt: {
         type: Number,
         default: 0.00
+    },
+    userId: {
+        type: Schema.Types.ObjectId,
+        required: true,
+        ref: global.collections.user,
+        validate: {
+			validator: function(v) {
+				return validateRefId(mongoose.model(global.collections.user), v);
+			},
+            message: props => { console.log(props); return `${props.value} is not a valid user id!`}
+		}
     }
 });
 
 inventoryCollectionSchema.index( {userId: 1, invntryType: 1 , SL: 1}, {unique: true});
 
-const schema = Joi.object({
-    invntryType: Joi.number().required().valid(InventoryType.Sale, InventoryType.Purchase, InventoryType.SaleReturn, InventoryType.PurchaseReturn, InventoryType.Other),
-    SL: Joi.number().required(),
-    date: Joi.date().required(),
-    cashRcredit: Joi.number().required().valid(CashRCredit.Cash, CashRCredit.Credit),
-    fromCode: Joi.string().max(10).required(),
-    toCode: Joi.string().max(10).required(),
-    invcNo: Joi.string().max(50),
-    invcDate: Joi.date().required(),
-    fiveAmt: Joi.number(),
-    fivePerAmt: Joi.number(),
-    twelveAmt: Joi.number(),
-    twelvePerAmt: Joi.number(),
-    eighteenAmt: Joi.number(),
-    eighteenPerAmt: Joi.number(),
-    twntyEightAmt: Joi.number(),
-    twntyEightPerAmt: Joi.number(),
-    zeroAmt: Joi.number(),
-    totalAmt: Joi.number(),
-    totalPerAmt: Joi.number(),
-    roundingAmt: Joi.number(),
-    totalInvcAmt: Joi.number()
-});
+function validate(record, finYearStart, finYearEnd){
 
-function validate(record){
+    const schema = Joi.object({
+        invntryType: Joi.number().required().valid(InventoryType.Sale, InventoryType.Purchase, InventoryType.SaleReturn, InventoryType.PurchaseReturn, InventoryType.Other),
+        SL: Joi.number().required(),
+        date: Joi.date().min(finYearStart).max(finYearEnd).required(),
+        cashRcredit: Joi.number().required().valid(CashRCredit.Cash, CashRCredit.Credit),
+        fromCode: Joi.string().max(10).required(),
+        toCode: Joi.string().max(10).required(),
+        invcNo: Joi.string().max(50),
+        invcDate: Joi.date().required(),
+        fiveAmt: Joi.number(),
+        fivePerAmt: Joi.number(),
+        twelveAmt: Joi.number(),
+        twelvePerAmt: Joi.number(),
+        eighteenAmt: Joi.number(),
+        eighteenPerAmt: Joi.number(),
+        twntyEightAmt: Joi.number(),
+        twntyEightPerAmt: Joi.number(),
+        zeroAmt: Joi.number(),
+        totalAmt: Joi.number(),
+        totalPerAmt: Joi.number(),
+        roundingAmt: Joi.number(),
+        totalInvcAmt: Joi.number()
+    });
+
     return schema.validate(record);
 }
 
@@ -181,3 +182,5 @@ const InventoryCollectionModel = mongoose.model(global.collections.inventory, in
 
 module.exports.validate = validate;
 module.exports.InventoryModel = InventoryCollectionModel;
+module.exports.InventoryType = InventoryType;
+module.exports.CashRCredit = CashRCredit;

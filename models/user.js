@@ -173,6 +173,7 @@ const userCollectionSchema = new Schema({
 //         throw new mongoose.Error('Group is linked with other records to delete.');
 // })
 
+/*
 userCollectionSchema.methods.generateAuthToken = function () {
 
     return jwt.sign(
@@ -181,6 +182,7 @@ userCollectionSchema.methods.generateAuthToken = function () {
         { expiresIn: '1h' }
     );
 };
+*/
 
 const schema = Joi.object({
     username: Joi.string().min(1).max(30).required(),
