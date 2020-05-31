@@ -250,7 +250,7 @@ function parseCSVInventory(results){
 
         switch(x.TYPE.trim().toUpperCase())
         {
-            case "SALE":            inventory.invntryType = InventoryType.Sale; break;
+            case "SALES":           inventory.invntryType = InventoryType.Sale; break;
             case "PURCHASE":        inventory.invntryType = InventoryType.Purchase; break;
             case "SALERETURN":      inventory.invntryType = InventoryType.SaleReturn; break;
             case "SALERETURN":      inventory.invntryType = InventoryType.PurchaseReturn; break;
