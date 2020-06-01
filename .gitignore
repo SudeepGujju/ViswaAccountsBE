@@ -41,6 +41,6 @@ testem.log
 Thumbs.db
 
 #/temp
-/upload
+/uploads
 group-upload.js
 routes/play-ground.js
