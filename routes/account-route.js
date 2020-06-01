@@ -39,7 +39,6 @@ router.get("/:id", async function (req, res) {
 router.get("/", async function (req, res) {
 
     try {
-
         const accounts = await AccountModel.find({ userId: req.user._id }).select('code firmName town proprietor phone gst groupCode opngBalAmt _id');
 
         return res.status(200).send(accounts);

@@ -95,21 +95,21 @@ function groupBy(records, keysArr)
             if(helper[key].INVAMT)
                 helper[key].INVAMT = parseFloat(helper[key].INVAMT).toFixed(2);
 
-            helper[key].TAXABUL = parseFloat(helper[key].TAXABUL).toFixed(2);
-            helper[key].IGST = parseFloat(helper[key].IGST).toFixed(2);
-            helper[key].CGST = parseFloat(helper[key].CGST).toFixed(2);
-            helper[key].SGST = parseFloat(helper[key].SGST).toFixed(2);
-            helper[key].CSS = parseFloat(helper[key].CSS).toFixed(2);
+            helper[key].TAXABUL = +parseFloat(helper[key].TAXABUL).toFixed(2);
+            helper[key].IGST = +parseFloat(helper[key].IGST).toFixed(2);
+            helper[key].CGST = +parseFloat(helper[key].CGST).toFixed(2);
+            helper[key].SGST = +parseFloat(helper[key].SGST).toFixed(2);
+            helper[key].CSS = +parseFloat(helper[key].CSS).toFixed(2);
 
             result.push(helper[key]);
         }
         else
         {
-            helper[key].TAXABUL = (parseFloat(helper[key].TAXABUL) + parseFloat(current.TAXABUL)).toFixed(2);
-            helper[key].IGST = (parseFloat(helper[key].IGST) + parseFloat(current.IGST)).toFixed(2);
-            helper[key].CGST = (parseFloat(helper[key].CGST) + parseFloat(current.CGST)).toFixed(2);
-            helper[key].SGST = (parseFloat(helper[key].SGST) + parseFloat(current.SGST)).toFixed(2);
-            helper[key].CSS = (parseFloat(helper[key].CSS) + parseFloat(current.CSS)).toFixed(2);
+            helper[key].TAXABUL = +( (parseFloat(helper[key].TAXABUL) + parseFloat(current.TAXABUL)).toFixed(2) );
+            helper[key].IGST = +( (parseFloat(helper[key].IGST) + parseFloat(current.IGST)).toFixed(2) );
+            helper[key].CGST = +( (parseFloat(helper[key].CGST) + parseFloat(current.CGST)).toFixed(2) );
+            helper[key].SGST = +( (parseFloat(helper[key].SGST) + parseFloat(current.SGST)).toFixed(2) );
+            helper[key].CSS = +( (parseFloat(helper[key].CSS) + parseFloat(current.CSS)).toFixed(2) );
         }
 
         return result;
@@ -124,12 +124,12 @@ function fnPrcsDataForGSTRA(records)
     records = records
                 .filter( x => x["GSTIN"])
                 .map( x => {
-                        x.INVAMT = parseFloat(x.INVAMT).toFixed(2);
-                        x.TAXABUL = parseFloat(x.TAXABUL).toFixed(2);
-                        x.IGST = parseFloat(x.IGST).toFixed(2);
-                        x.CGST = parseFloat(x.CGST).toFixed(2);
-                        x.SGST = parseFloat(x.SGST).toFixed(2);
-                        x.CSS = parseFloat(x.CSS).toFixed(2);
+                        x.INVAMT = +parseFloat(x.INVAMT).toFixed(2);
+                        x.TAXABUL = +parseFloat(x.TAXABUL).toFixed(2);
+                        x.IGST = +parseFloat(x.IGST).toFixed(2);
+                        x.CGST = +parseFloat(x.CGST).toFixed(2);
+                        x.SGST = +parseFloat(x.SGST).toFixed(2);
+                        x.CSS = +parseFloat(x.CSS).toFixed(2);
                         return x;
                     });
 
@@ -160,10 +160,7 @@ function fnPrcsDataForGSTInvoice(records)
         let vSGST = parseFloat(record.SGST);
         let vCSS = parseFloat(record.CSS);
 
-        record.DIFF = (vInvAmt - vTAXABUL - vIGST - vCGST - vIGST - vSGST - vCSS).toFixed(2);
-
-        record.DIFF = parseFloat(record.DIFF).toFixed(2);
-
+        record.DIFF = +(vInvAmt - vTAXABUL - vIGST - vCGST - vIGST - vSGST - vCSS).toFixed(2);
     });
 
     return records;
@@ -206,8 +203,8 @@ function fnPrcsDataTaxWise(records)
 
         const key = keys.join(" - ");
 
-        let vTAXABUL = (parseFloat(current.TAXABUL)).toFixed(2);
-        let vGST     = (parseFloat(current.IGST) + parseFloat(current.CGST) + parseFloat(current.SGST) ).toFixed(2);
+        let vTAXABUL = +parseFloat(current.TAXABUL).toFixed(2);
+        let vGST     = +( parseFloat(current.IGST) + parseFloat(current.CGST) + parseFloat(current.SGST) ).toFixed(2);
         let vTax     = parseInt(current.TAX);
 
         delete current["STATE"];
@@ -225,25 +222,25 @@ function fnPrcsDataTaxWise(records)
         {
             helper[key] = Object.assign({}, current);
 
-            helper[key]["0%"]   = "0.00";
-            helper[key]["5%"]   = "0.00";
-            helper[key]["12%"]  = "0.00";
-            helper[key]["18%"]  = "0.00";
-            helper[key]["28%"]  = "0.00";
+            helper[key]["0%"]   = 0.00;
+            helper[key]["5%"]   = 0.00;
+            helper[key]["12%"]  = 0.00;
+            helper[key]["18%"]  = 0.00;
+            helper[key]["28%"]  = 0.00;
 
             helper[key]["GST"]   = vGST;
 
-            helper[key]["INVAMT"]   = parseFloat(current.INVAMT).toFixed(2);
+            helper[key]["INVAMT"]   = +parseFloat(current.INVAMT).toFixed(2);
 
-            helper[key]["ROUNDING"] = (parseFloat(current.INVAMT) - parseFloat(vGST) - parseFloat(vTAXABUL)).toFixed(2);
+            helper[key]["ROUNDING"] = +(parseFloat(current.INVAMT) - parseFloat(vGST) - parseFloat(vTAXABUL)).toFixed(2);
 
             result.push(helper[key]);
         }
         else
         {
-            helper[key]["GST"]   = (parseFloat(helper[key]["GST"]) + parseFloat(vGST) ).toFixed(2);
+            helper[key]["GST"]   = +(parseFloat(helper[key]["GST"]) + parseFloat(vGST) ).toFixed(2);
 
-            helper[key]["ROUNDING"] = (parseFloat(helper[key]["ROUNDING"]) - parseFloat(vGST) - parseFloat(vTAXABUL)).toFixed(2);
+            helper[key]["ROUNDING"] = +(parseFloat(helper[key]["ROUNDING"]) - parseFloat(vGST) - parseFloat(vTAXABUL)).toFixed(2);
         }
 
         //Updating value based object reference.

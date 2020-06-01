@@ -52,7 +52,8 @@ router.get("/", async function (req, res) {
     try {
         const vouchers = await GeneralVoucherModel.find({ userId: req.user._id }).select('-userId -__v -vouchList').lean();
 
-		vouchers.forEach( x => { x.date = formatDate(x.date); x.totDbAmt = parseFloat(x.totDbAmt).toFixed(2); x.totCrAmt = parseFloat(x.totCrAmt).toFixed(2) } );
+        // x.totDbAmt = parseFloat(x.totDbAmt).toFixed(2); x.totCrAmt = parseFloat(x.totCrAmt).toFixed(2) 
+		vouchers.forEach( x => { x.date = formatDate(x.date);} );
 
         return res.status(200).send(vouchers);
     }
