@@ -1,6 +1,6 @@
 const Joi = require('@hapi/joi');
 const mongoose = require("mongoose");
-const jwt = require("jsonwebtoken");
+//const jwt = require("jsonwebtoken");
 
 const UserStatus = Object.freeze({ Active: 1, Inactive: 2 });
 
@@ -157,6 +157,30 @@ const userCollectionSchema = new Schema({
         uploadFile: {
             type: Boolean,
             default: false
+        },
+        createBank: {
+            type: Boolean,
+            default: false
+        },
+        editBank: {
+            type: Boolean,
+            default: false
+        },
+        deleteBank: {
+            type: Boolean,
+            default: false
+        },
+        viewListBank: {
+            type: Boolean,
+            default: false
+        },
+        createProduct: {
+            type: Boolean,
+            default: false
+        },
+        viewListProduct: {
+            type: Boolean,
+            default: false
         }
     }
 }, {
@@ -222,7 +246,13 @@ const permSchema = Joi.object({
         viewListUser: Joi.boolean(),
         editUserPersmissions: Joi.boolean(),
         generateReports: Joi.boolean(),
-        uploadFile: Joi.boolean()
+        uploadFile: Joi.boolean(),
+        createBank: Joi.boolean(),
+        editBank: Joi.boolean(),
+        deleteBank: Joi.boolean(),
+        viewListBank: Joi.boolean(),
+        createProduct: Joi.boolean(),
+        viewListProduct: Joi.boolean()
     })
 });
 

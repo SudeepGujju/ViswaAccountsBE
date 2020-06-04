@@ -5,6 +5,32 @@ const { parseDate, formatDate} = require('../utils/format');
 const upload = require('../utils/file-upload')(global.tempPath);
 const { readCSVFile, deleteFile } = require('../utils/file');
 
+router.get("/search", async function (req, res) {
+
+    try {
+
+        let query = { userId: req.user._id, invntryType: req.query.inventoryType, date: { $gte: parseDate(req.query.fromDate), $lte: parseDate(req.query.toDate)} }
+ 
+        if(req.query.code)
+            query.toCode = req.query.code;
+
+        const inventories = await InventoryModel
+                                    .find(query)
+                                    .select('invntryType SL date cashRcredit fromCode toCode invcNo invcDate totalAmt totalPerAmt roundingAmt totalInvcAmt')
+                                    .lean();
+
+        inventories.map( x => { x.date = formatDate(x.date);  x.invcDate = formatDate(x.invcDate); } );
+
+        return res.status(200).send(inventories);
+    }
+    catch (ex) {
+        
+        const error = parseError(ex);
+        return res.status(error.code).send(error.message);
+    }
+
+});
+
 router.get("/nextRecordID", async function (req, res) {
 
     try {

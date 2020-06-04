@@ -7,7 +7,17 @@ router.get("/search", async function (req, res) {
 
     try {
 
-        const banks = await BankModel.find({ userId: req.user._id, date: { $gte: parseDate(req.query.fromDate), $lte: parseDate(req.query.toDate)}, $or: [ {fromCode: req.query.code}, {toCode: req.query.code} ] }).select('-userId').lean();
+        let query = { userId: req.user._id, date: { $gte: parseDate(req.query.fromDate), $lte: parseDate(req.query.toDate)} };
+
+        if(req.query.code)
+        {
+            query['$or'] = [ {fromCode: req.query.code}, {toCode: req.query.code} ]
+        }
+
+        const banks = await BankModel
+                                .find(query)
+                                .select('-userId')
+                                .lean();
 
         banks.map( x => { x.date = formatDate(x.date) } );
 
