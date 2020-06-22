@@ -106,12 +106,12 @@ function generateTokens(user)
 	const refreshToken = crypto.randomBytes(16).toString('hex');
 
 	const accessToken = jwt.sign(
-							{_id: user._id, username: user.username, finYearStart: user.finYearStart, finYearEnd: user.finYearEnd},
+							{_id: user._id, loginID: user.loginID, username: user.username, finYearStart: user.finYearStart, finYearEnd: user.finYearEnd},
 							global.tokenSecret,
 							{ expiresIn: '15m' }//(15 * 60 * 1000)ms; 15 - mins
 						);
 
-	global.userTokens[refreshToken] = { payload: {_id: user._id, username: user.username, finYearStart: user.finYearStart, finYearEnd: user.finYearEnd}, accessToken };
+	global.userTokens[refreshToken] = { payload: {_id: user._id, loginID: user.loginID, username: user.username, finYearStart: user.finYearStart, finYearEnd: user.finYearEnd}, accessToken };
 
 	return {accessToken, refreshToken};
 }

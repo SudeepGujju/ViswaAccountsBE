@@ -7,11 +7,11 @@ router.get("/fileList", async function(req, res){
 
     try
     {
-        let username = req.user.username.substr(0,3);
+        let loginID = req.user.loginID.substr(0,3);
 
         let data = await getFilesList();
 
-        let filesList = data.filter( x => x.endsWith(".csv") && x.startsWith(username) );
+        let filesList = data.filter( x => x.endsWith(".csv") && x.startsWith(loginID) );
 
         return res.status(200).send(filesList);
     }

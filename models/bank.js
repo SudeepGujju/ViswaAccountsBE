@@ -98,7 +98,7 @@ function validate(record, finYearStart, finYearEnd){
 
     const schema = Joi.object({
         fromCode: Joi.string().max(10).required(),
-        toCode: Joi.string().max(10).required(),
+        toCode: Joi.string().max(10).required().invalid("1000", Joi.ref("fromCode")),
         SL: Joi.number().required(),
         date: Joi.date().min(finYearStart).max(finYearEnd).required(),
         chNo: Joi.string().allow('').max(10),
