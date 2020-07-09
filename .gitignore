@@ -40,7 +40,7 @@ testem.log
 .DS_Store
 Thumbs.db
 
-#/temp
+/temp
 /uploads
 group-upload.js
 routes/play-ground.js

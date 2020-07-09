@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const { parseError } = require('../utils/error');
 const { validate, ProductModel } = require('../models/product');
-const upload = require('../utils/file-upload')(global.tempPath);
+const upload = require('../utils/file-upload')(global.tempPath, true);
 const { readCSVFile, deleteFile } = require('../utils/file');
 
 router.get("/search", async function (req, res) {
@@ -10,8 +10,10 @@ router.get("/search", async function (req, res) {
 
         const query = {name: {$regex: req.query.name+".*", $options: 'i'}};
 
-        if(req.query.currUserOnly == '1')
+        if(req.query.myProdsOnly == '1')
             query.userId = req.user._id;
+        else
+            query.userId = { $ne: req.user._id };
 
         const products = await ProductModel.find(query).select('-_id -__v').populate('user', 'username phone -_id').lean();
 
@@ -34,7 +36,7 @@ router.post("/upload", upload.single('file'), async function(req, res){
 
         let data = await readCSVFile(req.file.path);
 
-        deleteFile(req.file.path);
+       // deleteFile(req.file.path);
 
         data = await parseCSVForProduct(data);
 

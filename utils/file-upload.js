@@ -1,18 +1,24 @@
 const multer = require('multer');
 
-module.exports = function (vDestPath) {
+module.exports = function (vDestPath, vUseRandFileName=false) {
 
     if(!vDestPath)
         vDestPath = global.tempPath;
+
+    let filename = null;
+    
+    if(!vUseRandFileName)
+    {
+        filename = function (req, file, cb) {
+            cb(null, file.originalname);
+        }
+    }
 
     var diskStorage = multer.diskStorage({
         destination: function (req, file, cb) {
             cb(null, vDestPath);
         },
-        filename: function (req, file, cb) {
-            // console.log(file);
-            cb(null, file.originalname + "");
-        }
+        filename: filename
     });
 
     return multer({

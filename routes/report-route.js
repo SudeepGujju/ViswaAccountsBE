@@ -74,7 +74,7 @@ router.get("/fileData", async function(req, res){
 
 });
 
-function groupBy(records, keysArr)
+function groupBy(records, keysArr, vGroupCountReq=false)
 {
     let processedData = [];
 
@@ -101,6 +101,9 @@ function groupBy(records, keysArr)
             helper[key].SGST = +parseFloat(helper[key].SGST).toFixed(2);
             helper[key].CSS = +parseFloat(helper[key].CSS).toFixed(2);
 
+            if(vGroupCountReq)
+                helper[key].BillCount = 0;
+
             result.push(helper[key]);
         }
         else
@@ -110,6 +113,9 @@ function groupBy(records, keysArr)
             helper[key].CGST = +( (parseFloat(helper[key].CGST) + parseFloat(current.CGST)).toFixed(2) );
             helper[key].SGST = +( (parseFloat(helper[key].SGST) + parseFloat(current.SGST)).toFixed(2) );
             helper[key].CSS = +( (parseFloat(helper[key].CSS) + parseFloat(current.CSS)).toFixed(2) );
+
+            if(vGroupCountReq)
+                helper[key].BillCount += 1;
         }
 
         return result;
@@ -181,7 +187,7 @@ function fnPrcsDataForGSTSummary(records)
                         return x;
                     });
 
-    records = groupBy(records, ["GSTIN"]);
+    records = groupBy(records, ["GSTIN"], true);
 
     return records;
 }

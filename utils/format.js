@@ -4,9 +4,9 @@ var momemt = require('moment');
 
 function formatDate(date){
 
-    let momentDate =  momemt(date);//, 'DD / MM / YYYY', true);
+    let momentDate =  momemt(date);//, 'DD/MM/YYYY', true);
 
-    return momentDate.format('DD / MM / YYYY');
+    return momentDate.format('DD/MM/YYYY');
 }
 
 function parseDate(date){
@@ -16,7 +16,7 @@ function parseDate(date){
         throw Error('Invalid argument');
     }
 
-    let momentDate = momemt(date, 'DD / MM / YYYY', true);
+    let momentDate = momemt(date, 'DD/MM/YYYY', true);
 
     if(!momentDate.isValid()){
         throw Error('Invalid date string');

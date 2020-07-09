@@ -142,7 +142,7 @@ const inventoryCollectionSchema = new Schema({
 			validator: function(v) {
 				return validateRefId(mongoose.model(global.collections.user), v);
 			},
-            message: props => { console.log(props); return `${props.value} is not a valid user id!`}
+            message: props => { return `${props.value} is not a valid user id!`}
 		}
     }
 });
