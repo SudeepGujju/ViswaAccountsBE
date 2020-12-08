@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { logger } = require('./logging');
 
 const mongooseOptions = {
     useNewUrlParser: true,
@@ -9,6 +10,7 @@ const mongooseOptions = {
     // autoReconnect: true,
     // reconnectTries: 5,
     // reconnectInterval: 1000,
+    serverSelectionTimeoutMS: 30000, // Timeout after 30s instead of 30s
     bufferMaxEntries: 0,
     family: 4 //Ipv4 - 4,
 };
@@ -16,38 +18,31 @@ const mongooseOptions = {
 //mongodb://youruser:yourpassword@localhost/yourdatabase
 
 // const url = "mongodb://localhost:27017/";
-const url = "mongodb://viswa:viswa.2626@localhost:27017/";
+// const dbURI = "mongodb://viswa:viswa.2626@localhost:27017/viswaaccounts?authSource=admin";
+const dbURI = "mongodb://viswa:viswa.2626@localhost:27017/viswaaccounts?authSource=admin&replicaSet=mongo-viswaaccounts-replica";
 
-const db = "viswaaccounts";
-const dbURI = url+db;
+module.exports = function(){
 
-module.exports = async function(){
+    mongoose.connection.on('connected', function(){
+        logger.info('Mongoose connected to ' + dbURI);
+    });
 
-    try
-    {
-        mongoose.connection.on('connected', function(){
-            console.log('Mongoose connected to ' + dbURI);
+    mongoose.connection.on('error', function(err){
+        logger.info('Mongoose connection error ' + err);
+    });
+
+    mongoose.connection.on('disconnected', function(){
+        logger.info('Mongoose disconnected');
+    });
+
+    process.on('SIGINT', function(){
+        mongoose.connection.close(function(){
+            logger.info('Mongoose connection closed through app termination');
+            process.exit(0);
         });
+    });
 
-        mongoose.connection.on('error', function(err){
-            console.log('Mongoose connection error ' + err);
-        });
+    //Establish connection to mongoDB. Below method returns promise. If any error occurs during connection error wil be thrown it will be caught globally in logging.js
+    mongoose.connect(dbURI, mongooseOptions);
 
-        mongoose.connection.on('disconnected', function(){
-            console.log('Mongoose disconnected');
-        });
-
-        process.on('SIGINT', function(){
-            mongoose.connection.close(function(){
-                console.log('Mongoose disconnected through app termination');
-                process.exit(0);
-            });
-        });
-
-        await mongoose.connect(dbURI, mongooseOptions);
-    }
-    catch(ex)
-    {
-        console.log(ex);
-    }
 }

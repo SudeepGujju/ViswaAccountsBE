@@ -145,6 +145,8 @@ const inventoryCollectionSchema = new Schema({
             message: props => { return `${props.value} is not a valid user id!`}
 		}
     }
+},{
+    writeConcern: "majority"
 });
 
 inventoryCollectionSchema.index( {userId: 1, invntryType: 1 , SL: 1}, {unique: true});

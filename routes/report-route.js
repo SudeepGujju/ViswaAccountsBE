@@ -102,7 +102,7 @@ function groupBy(records, keysArr, vGroupCountReq=false)
             helper[key].CSS = +parseFloat(helper[key].CSS).toFixed(2);
 
             if(vGroupCountReq)
-                helper[key].BillCount = 0;
+                helper[key].BillCount = 1;
 
             result.push(helper[key]);
         }
@@ -191,7 +191,7 @@ function fnPrcsDataForGSTSummary(records)
 
     return records;
 }
-let i = 0;
+
 function fnPrcsDataTaxWise(records)
 {
     let processedData = [];

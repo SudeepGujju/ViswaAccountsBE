@@ -4,11 +4,29 @@ const { validate, ProductModel } = require('../models/product');
 const upload = require('../utils/file-upload')(global.tempPath, true);
 const { readCSVFile, deleteFile } = require('../utils/file');
 
+router.get("/search/user", async function (req, res) {
+
+    try {
+
+        const query = {name: {$regex: "^"+req.query.name+".*", $options: 'i'}, userId: req.query.userId};
+
+        const products = await ProductModel.find(query).select('_id name company').lean();
+
+        return res.status(200).send(products);
+    }
+    catch (ex) {
+
+        const error = parseError(ex);
+        return res.status(error.code).send(error.message);
+    }
+
+});
+
 router.get("/search", async function (req, res) {
 
     try {
 
-        const query = {name: {$regex: req.query.name+".*", $options: 'i'}};
+        const query = {name: {$regex: "^"+req.query.name+".*", $options: 'i'}};
 
         if(req.query.myProdsOnly == '1')
             query.userId = req.user._id;
@@ -36,7 +54,7 @@ router.post("/upload", upload.single('file'), async function(req, res){
 
         let data = await readCSVFile(req.file.path);
 
-       // deleteFile(req.file.path);
+        deleteFile(req.file.path);
 
         data = await parseCSVForProduct(data);
 

@@ -23,7 +23,12 @@ router.get("/", async function (req, res) {
 
     try {
 
-        const users = await UserModel.find().select('-password -__v -permissions');
+        const query = {};
+
+        if(req.query.excludeLoggedInuser == 'Y')
+            query._id = {$ne: req.user._id};
+
+        const users = await UserModel.find(query).select('-password -__v -permissions');
 
         return res.status(200).send(users);
     }
@@ -105,12 +110,12 @@ router.delete("/:id", async function (req, res) {
 
 router.get("/permissions/:id", async function (req, res) {
     try {
-        const permissions = await UserModel.findOne({_id: req.params.id}).select('permissions');
+        const {permissions, username, _id} = await UserModel.findOne({_id: req.params.id}).select('permissions username');
 
         if (!permissions)
             return res.status(404).send('User with given id not found');
 
-        return res.status(200).send(permissions);
+        return res.status(200).send({permissions, username, _id});
     }
     catch (ex) {
         const error = parseError(ex);

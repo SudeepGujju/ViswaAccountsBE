@@ -66,22 +66,6 @@ const userCollectionSchema = new Schema({
             type: Boolean,
             default: false
         },
-        createVoucher: {
-            type: Boolean,
-            default: false
-        },
-        editVoucher: {
-            type: Boolean,
-            default: false
-        },
-        deleteVoucher: {
-            type: Boolean,
-            default: false
-        },
-        viewListVoucher: {
-            type: Boolean,
-            default: false
-        },
         createInventory: {
             type: Boolean,
             default: false
@@ -184,6 +168,7 @@ const userCollectionSchema = new Schema({
         }
     }
 }, {
+    writeConcern: "majority"
     // toJSON: { virtuals: true }
 });
 
@@ -224,10 +209,6 @@ const permSchema = Joi.object({
         editAccount: Joi.boolean(),
         deleteAccount: Joi.boolean(),
         viewListAccount: Joi.boolean(),
-        createVoucher: Joi.boolean(),
-        editVoucher: Joi.boolean(),
-        deleteVoucher: Joi.boolean(),
-        viewListVoucher: Joi.boolean(),
         createInventory: Joi.boolean(),
         editInventory: Joi.boolean(),
         deleteInventory: Joi.boolean(),

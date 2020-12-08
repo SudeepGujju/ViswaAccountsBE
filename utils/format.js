@@ -1,27 +1,26 @@
-var momemt = require('moment');
+var moment = require('moment');
 
 // console.log(momemt);
 
-function formatDate(date){
+function formatDate(date) {
 
-    let momentDate =  momemt(date);//, 'DD/MM/YYYY', true);
+    let momentDate = moment(date);//, 'DD/MM/YYYY', true);
 
     return momentDate.format('DD/MM/YYYY');
 }
 
-function parseDate(date){
+function parseDate(date) {
 
-    if(!date)
-    {
+    if (!date) {
         throw Error('Invalid argument');
     }
 
-    let momentDate = momemt(date, 'DD/MM/YYYY', true);
+    let momentDate = moment(date, 'DD/MM/YYYY', true);
 
-    if(!momentDate.isValid()){
+    if (!momentDate.isValid()) {
         throw Error('Invalid date string');
     }
-// console.log(momentDate.toDate().getTimezoneOffset())
+    // console.log(momentDate.toDate().getTimezoneOffset())
     return momentDate.toDate();
 
 }

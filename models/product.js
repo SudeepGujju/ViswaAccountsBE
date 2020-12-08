@@ -41,6 +41,7 @@ const productCollectionSchema = new Schema({
         }
     }
 },{
+    writeConcern: "majority",
     toJSON: {virtuals: true}
 });
 
@@ -55,7 +56,7 @@ productCollectionSchema.virtual('user', {
 
 const schema = Joi.object({
     name: Joi.string().min(1).required(),
-    packing: Joi.string(),
+    packing: Joi.string().allow(""),
     company: Joi.string().min(1),
     qty: Joi.number(),
     mrp: Joi.number()

@@ -1,3 +1,4 @@
+const ObjectId = require("mongoose").Types.ObjectId;
 const router = require('express').Router();
 const { validate, AccountModel } = require('../models/account');
 const { parseError } = require('../utils/error');
@@ -12,6 +13,38 @@ router.get("/dropdown", async function (req, res) {
         return res.status(200).send(accounts);
     }
     catch (ex) {
+        const error = parseError(ex);
+        return res.status(error.code).send(error.message);
+    }
+
+});
+
+router.get("/openingBalance", async function(req, res){
+
+    try {
+
+        const accountPipeline = [
+            {
+                '$match': { 'userId': ObjectId(req.user._id), 'opngBalAmt': {'$ne': 0} }
+            },
+            {
+                '$project':{
+                    _id: 0,
+                    code: 1,
+                    firmName: 1,
+                    town: 1,
+                    credit: { $cond: { if: { $lt: ['$opngBalAmt', 0] }, then: '$opngBalAmt', else: 0 }},
+                    debit: { $cond: { if: { $gt: ['$opngBalAmt', 0] }, then: '$opngBalAmt', else: 0 }}
+                }
+            }
+        ];
+
+        const accounts = await AccountModel.aggregate(accountPipeline);
+
+        return res.status(200).send(accounts);
+    }
+    catch (ex) {
+        
         const error = parseError(ex);
         return res.status(error.code).send(error.message);
     }

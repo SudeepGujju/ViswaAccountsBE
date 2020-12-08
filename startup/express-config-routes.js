@@ -1,5 +1,12 @@
+require('express-async-errors');
 const express       = require('express');
 const path          = require('path');
+const cors          = require('cors');
+const compression   = require('compression');
+
+const errorHandler  = require('../middlewares/error');
+const auth          = require('../middlewares/auth');
+
 const userRoutes    = require('../routes/user-route');
 const reportRoutes  = require('../routes/report-route');
 const groupRoutes   = require('../routes/group-route');
@@ -10,17 +17,38 @@ const fileRoutes   = require('../routes/file-route');
 const productRoutes = require('../routes/product-route');
 const inventoryRoutes = require('../routes/inventory-route');
 const genVouchRoutes = require('../routes/general-voucher-route');
-const auth          = require('../middlewares/auth');
-
-require('express-async-errors');
+const glRoutes      = require('../routes/gl-route');
+const orderRoutes      = require('../routes/order-route');
 
 const basePath = "/api";
 
 module.exports = function(app){
 
+    app.use(compression());
+
     app.use(express.static(path.join(__dirname, "../dist")));
 
-    // app.use((req, res, next) => { console.log(req.method, req.url); next(); })
+    /*
+    ** origin: Access-Control-Allow-Origin
+    ** methods: Access-Control-Allow-Methods
+    ** allowedHeaders: Access-Control-Allow-Headers - default Access-Control-Request-Headers
+    ** exposedHeaders: Access-Control-Expose-Headers
+    ** credentials: Access-Control-Allow-Credentials - to transfer cookies
+    ** maxAge: Access-Control-Max-Age
+    ** preflightContinue:
+    ** optionsSuccessStatus: For successful OPTIONS requests choke on 204 status code
+    */
+    const corsOptions = {
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTION"],
+        exposedHeaders: [global.authHeader],
+        optionsSuccessStatus: 204
+        //origin: ["https://localhost:4200"]
+    };
+
+    app.use(cors(corsOptions));
+
+    app.use(express.json());
+    app.use(express.urlencoded({extended: true}));
 
     app.use(basePath+"/"+"auth",   authRoutes);
     app.use(basePath+"/"+"user",    auth, userRoutes);
@@ -33,6 +61,8 @@ module.exports = function(app){
     app.use(basePath+"/"+"inventory", auth, inventoryRoutes);
     app.use(basePath+"/"+"general-voucher", auth, genVouchRoutes);
     app.use(basePath+"/"+"file",    auth, fileRoutes);
+    app.use(basePath+"/"+"gl",    auth, glRoutes);
+    app.use(basePath+"/"+"order",    auth, orderRoutes);
 
     app.get("/*", function (req, res, next) {
         return res.sendFile(
@@ -44,4 +74,6 @@ module.exports = function(app){
         return res.status(404).send('Invalid request method/url');
     });
 
+    app.use(errorHandler);
+    
 }

@@ -36,6 +36,7 @@ const groupCollectionSchema = new Schema({
 		}
     }
 },{
+    writeConcern: "majority"
     // toJSON: { virtuals: true },
 });
 

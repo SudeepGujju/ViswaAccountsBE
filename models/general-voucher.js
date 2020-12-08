@@ -41,6 +41,8 @@ const voucherSchema = new Schema({
         type: Number,
         default: 0.00
     }
+},{
+    writeConcern: "majority"
 });
 
 const generalVoucherCollectionSchema = new Schema({
@@ -72,6 +74,8 @@ const generalVoucherCollectionSchema = new Schema({
             message: props => { console.log(props); return `${props.value} is not a valid user id!`}
 		}
     }
+},{
+    writeConcern: "majority"
 });
 
 generalVoucherCollectionSchema.index( {userId: 1, No: 1}, {unique: true});

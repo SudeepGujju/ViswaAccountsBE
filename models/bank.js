@@ -89,6 +89,7 @@ const bankCollectionSchema = new Schema({
 		}
     }
 },{
+    writeConcern: "majority"
     // toJSON: { virtuals: true }
 });
 

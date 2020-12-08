@@ -113,6 +113,7 @@ const accountCollectionSchema = new Schema({
 		}
     }
 },{
+    writeConcern: "majority"
     // toJSON: { virtuals: true }
 });
 
