@@ -2,8 +2,12 @@ const ObjectId = require("mongoose").Types.ObjectId;
 const router = require('express').Router();
 const { validate, AccountModel } = require('../models/account');
 const { parseError } = require('../utils/error');
-const upload = require('../utils/file-upload')(global.tempPath);
 const { readCSVFile, deleteFile } = require('../utils/file');
+
+const { FileFormats, UploadMiddleware } = require('../utils/file-upload');
+
+const uploadConfig = { DestinationPath: global.tempPath, UseOriginalFileName: false, AllowedFileFormats: [FileFormats.CSV, FileFormats.XLS] };
+const uploadAccountFile = UploadMiddleware(uploadConfig);
 
 router.get("/dropdown", async function (req, res) {
 
@@ -174,7 +178,7 @@ router.get("/codeAvailable/:code", async function(req, res){
 
 });
 
-router.post("/upload", upload.single('file'), async function(req, res){ 
+router.post("/upload", uploadAccountFile.single('file'), async function(req, res){ 
 
     try{
 

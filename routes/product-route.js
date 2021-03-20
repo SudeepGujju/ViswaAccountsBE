@@ -1,8 +1,11 @@
 const router = require('express').Router();
 const { parseError } = require('../utils/error');
 const { validate, ProductModel } = require('../models/product');
-const upload = require('../utils/file-upload')(global.tempPath, true);
 const { readCSVFile, deleteFile } = require('../utils/file');
+const { FileFormats, UploadMiddleware } = require('../utils/file-upload');
+
+const uploadConfig = { DestinationPath: global.tempPath, UseOriginalFileName: false, AllowedFileFormats: [FileFormats.CSV, FileFormats.XLS] };
+const uploadProductFile = UploadMiddleware(uploadConfig);
 
 router.get("/search/user", async function (req, res) {
 
@@ -45,7 +48,7 @@ router.get("/search", async function (req, res) {
 
 });
 
-router.post("/upload", upload.single('file'), async function(req, res){
+router.post("/upload", uploadProductFile.single('file'), async function(req, res){
 
     try{
 

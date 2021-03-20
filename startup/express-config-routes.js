@@ -3,6 +3,7 @@ const express       = require('express');
 const path          = require('path');
 const cors          = require('cors');
 const compression   = require('compression');
+const helmet        = require('helmet');
 
 const errorHandler  = require('../middlewares/error');
 const auth          = require('../middlewares/auth');
@@ -24,6 +25,19 @@ const basePath = "/api";
 
 module.exports = function(app){
 
+    /*
+    By default, however, Express publicizes itself. In every request, there’s an HTTP
+    header that identifies your site as powered by Express. X-Powered-By: Express is sent
+    with every request, by default. You can easily disable it with a setting:
+    app.disable("X-Powered-By");
+    Disabling the X-Powered-By option disables the setting of the header. Disabling this
+    will make it a little harder for hackers.
+    */
+    //app.disable('x-powered-by');
+
+    //app.use(helmet());
+    app.use(helmet({contentSecurityPolicy: false}));
+
     app.use(compression());
 
     app.use(express.static(path.join(__dirname, "../dist")));
@@ -41,7 +55,7 @@ module.exports = function(app){
     const corsOptions = {
         methods: ["GET", "POST", "PUT", "DELETE", "OPTION"],
         exposedHeaders: [global.authHeader],
-        optionsSuccessStatus: 204
+        optionsSuccessStatus: 200
         //origin: ["https://localhost:4200"]
     };
 
@@ -51,15 +65,15 @@ module.exports = function(app){
     app.use(express.urlencoded({extended: true}));
 
     app.use(basePath+"/"+"auth",   authRoutes);
-    app.use(basePath+"/"+"user",    auth, userRoutes);
+    app.use(basePath+"/"+"users",    auth, userRoutes);
     // app.use(basePath+"/"+"user",    userRoutes);
-    app.use(basePath+"/"+"group",   auth, groupRoutes);
-    app.use(basePath+"/"+"product",   auth, productRoutes);
-    app.use(basePath+"/"+"account", auth, accountRoutes);
+    app.use(basePath+"/"+"groups",   auth, groupRoutes);
+    app.use(basePath+"/"+"products",   auth, productRoutes);
+    app.use(basePath+"/"+"accounts", auth, accountRoutes);
     app.use(basePath+"/"+"reports", auth, reportRoutes);
     app.use(basePath+"/"+"bank",    auth, bankRoutes);
-    app.use(basePath+"/"+"inventory", auth, inventoryRoutes);
-    app.use(basePath+"/"+"general-voucher", auth, genVouchRoutes);
+    app.use(basePath+"/"+"inventories", auth, inventoryRoutes);
+    app.use(basePath+"/"+"general-vouchers", auth, genVouchRoutes);
     app.use(basePath+"/"+"file",    auth, fileRoutes);
     app.use(basePath+"/"+"gl",    auth, glRoutes);
     app.use(basePath+"/"+"order",    auth, orderRoutes);

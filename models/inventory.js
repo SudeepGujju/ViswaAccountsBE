@@ -161,7 +161,7 @@ function validate(record, finYearStart, finYearEnd){
         fromCode: Joi.string().max(10).required(),
         toCode: Joi.string().max(10).required(),
         invcNo: Joi.string().max(50),
-        invcDate: Joi.date().required(),
+        invcDate: Joi.date().min(finYearStart).max(finYearEnd).required(),
         fiveAmt: Joi.number(),
         fivePerAmt: Joi.number(),
         twelveAmt: Joi.number(),

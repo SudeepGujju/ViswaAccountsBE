@@ -330,8 +330,8 @@ router.get("/prepare", async function (req, res) {
                             '$match': {
                                 '$expr': {
                                     '$and': [
-                                        {'$eq': ['$code', '$$account_code'] },
-                                        {'$eq': ['$userId', '$$account_userID']}
+                                        {'$eq': ['$userId', '$$account_userID']},
+                                        {'$eq': ['$code', '$$account_code'] }                                        
                                     ]
                                 }
                             }
@@ -376,8 +376,8 @@ router.get("/prepare", async function (req, res) {
                             '$match': {
                                 '$expr': {
                                     '$and': [
-                                        {'$eq': ['$code', '$$group_code'] },
-                                        {'$eq': ['$userId', '$$group_userID'] }
+                                        {'$eq': ['$userId', '$$group_userID'] },
+                                        {'$eq': ['$code', '$$group_code'] }
                                     ]
                                 }
                             }

@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { promisify } = require('util');
-const csv       = require('csv-parser');
+const csv = require('csv-parser');
 
 const fsReadDir = promisify(fs.readdir);
 const fsFilesExist = promisify(fs.exists);

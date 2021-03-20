@@ -1,12 +1,19 @@
 const mongoose = require("mongoose");
 const multer = require('multer');
 
+class InvalidFileFormatError extends Error{
+    constructor(message){
+        super(message);
+        this.name = this.constructor.name;
+    }
+}
+
 module.exports.parseError = function(ex){
 
     const error = {code: 500, message: "Internal server error"};
 
-    if(ex instanceof mongoose.Error || ex instanceof mongoose.mongo.MongoError){
-
+    if(ex instanceof mongoose.Error || ex instanceof mongoose.mongo.MongoError)
+    {
         error.code = 400;
 
         if(ex.code == 11000)
@@ -21,12 +28,21 @@ module.exports.parseError = function(ex){
         error.code = 400;
         error.message = ex.message;
     }
-    else if(ex instanceof TypeError || ex instanceof ReferenceError || ex instanceof RangeError){
+    else if(ex instanceof InvalidFileFormatError)
+    {
+        error.code = 400;
+        error.message = ex.message;
+    }
+    else if(ex instanceof TypeError || ex instanceof ReferenceError || ex instanceof RangeError)
+    {
         console.log(ex);
     }
-    else{
-        console.log(ex);   
+    else
+    {
+        console.log(ex);
     }
 
     return error;
 }
+
+module.exports.InvalidFileFormatError = InvalidFileFormatError;

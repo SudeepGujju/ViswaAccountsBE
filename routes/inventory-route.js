@@ -2,8 +2,12 @@ const router = require('express').Router();
 const { validate, InventoryModel, InventoryType, CashRCredit } = require('../models/inventory');
 const { parseError } = require('../utils/error');
 const { parseDate, formatDate} = require('../utils/format');
-const upload = require('../utils/file-upload')(global.tempPath);
 const { readCSVFile, deleteFile } = require('../utils/file');
+
+const { FileFormats, UploadMiddleware } = require('../utils/file-upload');
+
+const uploadConfig = { DestinationPath: global.tempPath, UseOriginalFileName: false, AllowedFileFormats: [FileFormats.CSV, FileFormats.XLS] };
+const uploadInventoryFile = UploadMiddleware(uploadConfig);
 
 router.get("/search", async function (req, res) {
 
@@ -186,7 +190,7 @@ router.delete("/:id", async function (req, res) {
 
 });
 
-router.post("/upload", upload.single('file'), async function(req, res){
+router.post("/upload", uploadInventoryFile.single('file'), async function(req, res){
 
     try{
 
@@ -290,11 +294,11 @@ function parseCSVInventory(results){
         }
 
         inventory.SL = x.SLNO;
-        inventory.date = x.DATE;
+        inventory.date = parseDate(x.DATE);
         inventory.fromCode = x.GLCODE;
         inventory.toCode = x.CODE1;
         inventory.invcNo = x.INVNO;
-        inventory.invcDate = x.INVDATE;
+        inventory.invcDate = parseDate(x.INVDATE);
         inventory.fiveAmt = isNaN(x.AMT5) ? '0.00' : parseFloat(x.AMT5).toFixed(2);
         inventory.fivePerAmt = isNaN(x.TAX5) ? '0.00' : parseFloat(x.TAX5).toFixed(2);
         inventory.twelveAmt = isNaN(x.AMT12) ? '0.00' : parseFloat(x.AMT12).toFixed(2);

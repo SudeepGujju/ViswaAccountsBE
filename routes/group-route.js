@@ -1,8 +1,11 @@
 const router = require('express').Router();
 const { validate, GroupModel, GroupType } = require('../models/group');
 const { parseError } = require('../utils/error');
-const upload = require('../utils/file-upload')(global.tempPath);
 const { readCSVFile, deleteFile } = require('../utils/file');
+const { FileFormats, UploadMiddleware } = require('../utils/file-upload');
+
+const uploadConfig = { DestinationPath: global.tempPath, UseOriginalFileName: false, AllowedFileFormats: [FileFormats.CSV, FileFormats.XLS] };
+const uploadGroupFile = UploadMiddleware(uploadConfig);
 
 router.get("/dropdown", async function (req, res) {
 
@@ -131,7 +134,7 @@ router.get("/codeAvailable/:code", async function(req, res){
 
 });
 
-router.post("/upload", upload.single('file'), async function(req, res){ 
+router.post("/upload", uploadGroupFile.single('file'), async function(req, res){ 
 
     try{
 
