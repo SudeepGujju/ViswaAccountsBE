@@ -23,26 +23,29 @@ const dbURI = "mongodb://viswa:viswa.2626@localhost:27017/viswaaccounts?authSour
 
 module.exports = function(){
 
-    mongoose.connection.on('connected', function(){
+    //Establish connection to mongoDB. Below method returns promise. If any error occurs during connection error wil be thrown.
+    mongoose.connect(dbURI, mongooseOptions).catch(function(e){
+        logger.error('Unable to create mongoose connection ' + e);
+    });
+
+    const db = mongoose.connection;
+
+    db.on('connected', function(){
         logger.info('Mongoose connected to ' + dbURI);
     });
 
-    mongoose.connection.on('error', function(err){
-        logger.info('Mongoose connection error ' + err);
-    });
+    // db.on('error', function(err){
+    //     logger.error('Mongoose connection error ' + err);
+    // });
 
-    mongoose.connection.on('disconnected', function(){
+    db.on('disconnected', function(){
         logger.info('Mongoose disconnected');
     });
 
     process.on('SIGINT', function(){
-        mongoose.connection.close(function(){
+        db.close(function(){
             logger.info('Mongoose connection closed through app termination');
             process.exit(0);
         });
     });
-
-    //Establish connection to mongoDB. Below method returns promise. If any error occurs during connection error wil be thrown it will be caught globally in logging.js
-    mongoose.connect(dbURI, mongooseOptions);
-
 }

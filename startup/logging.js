@@ -5,7 +5,7 @@ const logger = winston.createLogger({
     exitOnError: true,
     transports:[
         new winston.transports.DailyRotateFile({
-            dirname: 'logs',
+            dirname: global.logFolderName,
             filename: '%DATE%.log',
             datePattern: 'YYYY-MM-DD',
             frequency: '24h',

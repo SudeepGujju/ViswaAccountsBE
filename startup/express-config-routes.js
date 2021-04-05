@@ -1,9 +1,6 @@
 require('express-async-errors');
 const express       = require('express');
 const path          = require('path');
-const cors          = require('cors');
-const compression   = require('compression');
-const helmet        = require('helmet');
 
 const errorHandler  = require('../middlewares/error');
 const auth          = require('../middlewares/auth');
@@ -21,66 +18,29 @@ const genVouchRoutes = require('../routes/general-voucher-route');
 const glRoutes      = require('../routes/gl-route');
 const orderRoutes      = require('../routes/order-route');
 
-const basePath = "/api";
+const apiBasePath = "/api";
 
 module.exports = function(app){
 
-    /*
-    By default, however, Express publicizes itself. In every request, there’s an HTTP
-    header that identifies your site as powered by Express. X-Powered-By: Express is sent
-    with every request, by default. You can easily disable it with a setting:
-    app.disable("X-Powered-By");
-    Disabling the X-Powered-By option disables the setting of the header. Disabling this
-    will make it a little harder for hackers.
-    */
-    //app.disable('x-powered-by');
+    app.use(express.static(path.join(__dirname, "../public")));
 
-    //app.use(helmet());
-    app.use(helmet({contentSecurityPolicy: false}));
-
-    app.use(compression());
-
-    app.use(express.static(path.join(__dirname, "../dist")));
-
-    /*
-    ** origin: Access-Control-Allow-Origin
-    ** methods: Access-Control-Allow-Methods
-    ** allowedHeaders: Access-Control-Allow-Headers - default Access-Control-Request-Headers
-    ** exposedHeaders: Access-Control-Expose-Headers
-    ** credentials: Access-Control-Allow-Credentials - to transfer cookies
-    ** maxAge: Access-Control-Max-Age
-    ** preflightContinue:
-    ** optionsSuccessStatus: For successful OPTIONS requests choke on 204 status code
-    */
-    const corsOptions = {
-        methods: ["GET", "POST", "PUT", "DELETE", "OPTION"],
-        exposedHeaders: [global.authHeader],
-        optionsSuccessStatus: 200
-        //origin: ["https://localhost:4200"]
-    };
-
-    app.use(cors(corsOptions));
-
-    app.use(express.json());
-    app.use(express.urlencoded({extended: true}));
-
-    app.use(basePath+"/"+"auth",   authRoutes);
-    app.use(basePath+"/"+"users",    auth, userRoutes);
+    app.use(apiBasePath+"/"+"auth",   authRoutes);
+    app.use(apiBasePath+"/"+"users",    auth, userRoutes);
     // app.use(basePath+"/"+"user",    userRoutes);
-    app.use(basePath+"/"+"groups",   auth, groupRoutes);
-    app.use(basePath+"/"+"products",   auth, productRoutes);
-    app.use(basePath+"/"+"accounts", auth, accountRoutes);
-    app.use(basePath+"/"+"reports", auth, reportRoutes);
-    app.use(basePath+"/"+"bank",    auth, bankRoutes);
-    app.use(basePath+"/"+"inventories", auth, inventoryRoutes);
-    app.use(basePath+"/"+"general-vouchers", auth, genVouchRoutes);
-    app.use(basePath+"/"+"file",    auth, fileRoutes);
-    app.use(basePath+"/"+"gl",    auth, glRoutes);
-    app.use(basePath+"/"+"order",    auth, orderRoutes);
+    app.use(apiBasePath+"/"+"groups",   auth, groupRoutes);
+    app.use(apiBasePath+"/"+"products",   auth, productRoutes);
+    app.use(apiBasePath+"/"+"accounts", auth, accountRoutes);
+    app.use(apiBasePath+"/"+"reports", auth, reportRoutes);
+    app.use(apiBasePath+"/"+"bank",    auth, bankRoutes);
+    app.use(apiBasePath+"/"+"inventories", auth, inventoryRoutes);
+    app.use(apiBasePath+"/"+"general-vouchers", auth, genVouchRoutes);
+    app.use(apiBasePath+"/"+"file",    auth, fileRoutes);
+    app.use(apiBasePath+"/"+"gl",    auth, glRoutes);
+    app.use(apiBasePath+"/"+"order",    auth, orderRoutes);
 
     app.get("/*", function (req, res, next) {
         return res.sendFile(
-            path.join(__dirname, "../dist/index.html")
+            path.join(__dirname, "../public/index.html")
         );
     });
 
