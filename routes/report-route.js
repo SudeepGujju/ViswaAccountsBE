@@ -7,7 +7,7 @@ router.get("/fileList", async function(req, res){
 
     try
     {
-        let loginID = req.user.loginID.substr(0,3);
+        let loginID = req.user.loginID.substr(0, 3);
 
         let data = await getFilesList();
 
@@ -82,7 +82,7 @@ function groupBy(records, keysArr, vGroupCountReq=false)
     processedData = records.reduce((result, current)=>{
 
         const keys = [];
-        keysArr.forEach((v,i)=>{
+        keysArr.forEach((v, i)=>{
             keys.push(current[v]);
         });
 
@@ -156,7 +156,7 @@ function fnPrcsDataForGSTInvoice(records)
 
     records = groupBy(records, ["GSTIN", "INVNO", "INVDATE"]);
 
-    records.forEach((record,v)=>{
+    records.forEach((record, v)=>{
 
         let vInvAmt = parseFloat(record.INVAMT);
 
@@ -203,7 +203,7 @@ function fnPrcsDataTaxWise(records)
             return result;
 
         const keys = [];
-        ["GSTIN", "INVNO", "INVDATE"].forEach((v,i)=>{
+        ["GSTIN", "INVNO", "INVDATE"].forEach((v, i)=>{
             keys.push(current[v]);
         });
 

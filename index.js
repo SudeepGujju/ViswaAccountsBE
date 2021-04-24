@@ -12,6 +12,8 @@ require("./startup/express-config-app")(app);
 const { logger } = require("./startup/logging");
 require("./startup/express-config-routes")(app);
 require("./startup/database")();
+require("./startup/tasks")();
+require("./startup/cleanup")();
 
 const server = http.createServer(app);
 

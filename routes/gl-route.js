@@ -213,9 +213,9 @@ router.get("/prepare", async function (req, res) {
         const pipeline = [
             {
                 $match: { "userId": ObjectId(req.user._id) },
-            },{
+            }, {
                 $project: { "vouchList": 1, "No": 1, "date": 1, "_id": 1}
-            },{
+            }, {
                 $unwind: "$vouchList"
             }
         ];

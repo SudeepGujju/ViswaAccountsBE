@@ -187,8 +187,8 @@ userCollectionSchema.methods.generateAuthToken = function () {
 
     return jwt.sign(
         { _id: this._id, username: this.username },
-        global.tokenSecret,
-        { expiresIn: '1h' }
+        global.privateKey,
+        {algorithm: 'RS256', expiresIn: '1h' }
     );
 };
 */

@@ -1,9 +1,11 @@
 const router = require('express').Router();
 const { validateLogin, UserModel, UserStatus} = require('../models/user');
-const bcrypt    = require('bcrypt');
+const bcrypt = require('bcrypt');
 const { parseError } = require('../utils/error');
 const jwt = require("jsonwebtoken");
 const crypto = require('crypto');
+const { ActiveUsersModel } = require('../models/active-users');
+const { getParsedSchemaToken } = require('../utils/token');
 
 router.post("/login", async function(req, res){
 
@@ -28,15 +30,29 @@ router.post("/login", async function(req, res){
 		delete userDetails.password;
 
 		userDetails.finYearStart = new Date(parseInt(userDetails.finYear.split('-')[0], 10), 3, 1);
-    	userDetails.finYearEnd = new Date(parseInt(userDetails.finYear.split('-')[1], 10), 2, 31);
+		userDetails.finYearEnd = new Date(parseInt(userDetails.finYear.split('-')[1], 10), 2, 31);
 
-		let tokens = generateTokens(userDetails);
+		let {accessToken, refreshToken} = generateTokens(userDetails._id);
 
-		userDetails.accessToken = tokens.accessToken;
-		userDetails.refreshToken = tokens.refreshToken;
+		userDetails.accessToken = accessToken;
+		userDetails.refreshToken = refreshToken;
+
+		const activeUser = new ActiveUsersModel({
+			accessToken: accessToken,
+			refreshToken: refreshToken,
+			user: {
+				loginID: userDetails.loginID,
+				username: userDetails.username,
+				finYearStart: userDetails.finYearStart,
+				finYearEnd: userDetails.finYearEnd,
+				_id: userDetails._id
+			},
+			lastAccessed: new Date()
+		});
+
+		await activeUser.save();
 
         return res.status(200).send(userDetails);
-
     }
 	catch(e)
 	{
@@ -48,72 +64,87 @@ router.post("/login", async function(req, res){
 
 router.post("/logout", async function(req, res){
 
-	const refreshToken = req.body.refreshToken;
-
-	if(refreshToken in global.userTokens)
+	try
 	{
-		delete global.userTokens[refreshToken];
+		ActiveUsersModel.deleteOne({'accessToken': getParsedSchemaToken(req) }).exec();
+	}
+	catch(e)
+	{
+		//console.log(e);
 	}
 
 	return res.status(200).send("Logged out successfully.");
-
 });
 
 router.post("/refresh", async function(req, res){
 
-	const refreshToken = req.body.refreshToken;
-
-	if(refreshToken in global.userTokens)
+	try
 	{
-		let tokenExpiredTime = null;
+		const refreshToken = req.body.refreshToken;
+
+		let oldAcessToken = getParsedSchemaToken(req);
+
+		const activeUser = await ActiveUsersModel.findOne({'refreshToken': refreshToken });
+
+		if(!activeUser)
+		{
+			throw new Error("User session expired");
+		}
+
+		let bIsTokenExpired = false;
+
 		try
 		{
-			jwt.verify(token, global.tokenSecret);
+			jwt.verify(oldAcessToken, global.publicKey, {algorithm: global.tokenAlgorithm} );
 		}
 		catch(e)
 		{
 			if(e instanceof jwt.TokenExpiredError){
-				tokenExpiredTime = e.expiredAt.getTime();
+				bIsTokenExpired = true;
 			}
 		}
 
-		if(tokenExpiredTime <  (new Date().getTime() + (15 * 60 * 1000)) )
+		if(bIsTokenExpired)
 		{
-			let accessToken = jwt.sign(
-								global.userTokens[refreshToken].payload,
-								global.tokenSecret,
-								{ expiresIn: '15m' }//(15 * 60 * 1000)ms;
-							);
+			let accessToken = generateAccessToken(activeUser.user._id);
 
-			global.userTokens[refreshToken].accessToken = accessToken;
+			activeUser.accessToken = accessToken;
+			activeUser.lastAccessed = new Date();
 
-			return res.status(200).send({accessToken})
-		}
-		else
-		{
-			return res.status(401).send("Session expired. Please relogin.");
+			await activeUser.save();
+
+			return res.status(200).send({accessToken});
 		}
 	}
-	else
+	catch(e)
 	{
-		return res.status(401).send("Session expired. Please relogin.");
+		// console.log(e);
 	}
+
+	return res.status(401).send("Session expired. Please relogin.");
 
 });
 
-function generateTokens(user)
+function generateTokens(userId)
 {
 	const refreshToken = crypto.randomBytes(16).toString('hex');
 
-	const accessToken = jwt.sign(
-							{_id: user._id, loginID: user.loginID, username: user.username, finYearStart: user.finYearStart, finYearEnd: user.finYearEnd},
-							global.tokenSecret,
-							{ expiresIn: '15m' }//(15 * 60 * 1000)ms; 15 - mins
-						);
-
-	global.userTokens[refreshToken] = { payload: {_id: user._id, loginID: user.loginID, username: user.username, finYearStart: user.finYearStart, finYearEnd: user.finYearEnd}, accessToken };
+	const accessToken = generateAccessToken(userId);
 
 	return {accessToken, refreshToken};
-}
+}//generateTokens
+
+function generateAccessToken(userId){
+
+	const payload = {sub: userId };
+
+	const accessToken = jwt.sign(
+		payload,
+		global.privateKey,
+		{algorithm: global.tokenAlgorithm, expiresIn: global.sessionValidityInSecs }
+	);
+
+	return accessToken;
+}//generateAccessToken
 
 module.exports = router;

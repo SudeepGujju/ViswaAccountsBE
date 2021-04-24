@@ -11,21 +11,20 @@ module.exports = function(req, res, next){
 
         token = token.substring(7);
 
-        const decoded = jwt.verify(token, global.tokenSecret);
+        const decoded = jwt.verify(token, global.publicKey, {algorithm: global.tokenAlgorithm});
 		req.user = decoded;
 
-        let tokeniat = new Date(decoded.iat * 1000).getTime();
+        // let tokeniat = new Date(decoded.iat).getTime();
 
-        if(tokeniat < global.appStartTime.getTime())
-        {
-            throw Error("Invalid token");
-        }
+        // if(tokeniat < global.appStartTime.getTime())
+        // {
+        //     throw Error("Invalid token");
+        // }
 
         next();
     }
     catch(ex)
     {
-        // console.log(ex);
 		return res.status(401).send("UnAuthorized Access");//( (ex ? ex : 'Invalid token') );
     }
 

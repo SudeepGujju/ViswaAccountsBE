@@ -291,7 +291,7 @@ function parseCSVForAccounts(results)
 
         let account = {};
 
-        x.PHONE.replace = x.PHONE.replace(/[^\d]/g,'')
+        x.PHONE.replace = x.PHONE.replace(/[^\d]/g, '')
 
         account.code = x.CCODE.toUpperCase();
         account.firmName = x.CNAME;

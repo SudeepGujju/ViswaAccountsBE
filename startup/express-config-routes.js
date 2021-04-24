@@ -3,7 +3,7 @@ const express       = require('express');
 const path          = require('path');
 
 const errorHandler  = require('../middlewares/error');
-const auth          = require('../middlewares/auth');
+// const auth          = require('../middlewares/auth');
 
 const userRoutes    = require('../routes/user-route');
 const reportRoutes  = require('../routes/report-route');
@@ -17,6 +17,7 @@ const inventoryRoutes = require('../routes/inventory-route');
 const genVouchRoutes = require('../routes/general-voucher-route');
 const glRoutes      = require('../routes/gl-route');
 const orderRoutes      = require('../routes/order-route');
+const passport = require('passport');
 
 const apiBasePath = "/api";
 
@@ -25,18 +26,19 @@ module.exports = function(app){
     app.use(express.static(path.join(__dirname, "../public")));
 
     app.use(apiBasePath+"/"+"auth",   authRoutes);
-    app.use(apiBasePath+"/"+"users",    auth, userRoutes);
+    app.use(apiBasePath+"/"+"users",    passport.authenticate('jwt', {session: false}), userRoutes);
     // app.use(basePath+"/"+"user",    userRoutes);
-    app.use(apiBasePath+"/"+"groups",   auth, groupRoutes);
-    app.use(apiBasePath+"/"+"products",   auth, productRoutes);
-    app.use(apiBasePath+"/"+"accounts", auth, accountRoutes);
-    app.use(apiBasePath+"/"+"reports", auth, reportRoutes);
-    app.use(apiBasePath+"/"+"bank",    auth, bankRoutes);
-    app.use(apiBasePath+"/"+"inventories", auth, inventoryRoutes);
-    app.use(apiBasePath+"/"+"general-vouchers", auth, genVouchRoutes);
-    app.use(apiBasePath+"/"+"file",    auth, fileRoutes);
-    app.use(apiBasePath+"/"+"gl",    auth, glRoutes);
-    app.use(apiBasePath+"/"+"order",    auth, orderRoutes);
+    app.use(apiBasePath+"/"+"groups",  passport.authenticate('jwt', {session: false}), groupRoutes);
+
+    app.use(apiBasePath+"/"+"products",   passport.authenticate('jwt', {session: false}), productRoutes);
+    app.use(apiBasePath+"/"+"accounts", passport.authenticate('jwt', {session: false}), accountRoutes);
+    app.use(apiBasePath+"/"+"reports", passport.authenticate('jwt', {session: false}), reportRoutes);
+    app.use(apiBasePath+"/"+"bank",    passport.authenticate('jwt', {session: false}), bankRoutes);
+    app.use(apiBasePath+"/"+"inventories", passport.authenticate('jwt', {session: false}), inventoryRoutes);
+    app.use(apiBasePath+"/"+"general-vouchers", passport.authenticate('jwt', {session: false}), genVouchRoutes);
+    app.use(apiBasePath+"/"+"file",    passport.authenticate('jwt', {session: false}), fileRoutes);
+    app.use(apiBasePath+"/"+"gl",    passport.authenticate('jwt', {session: false}), glRoutes);
+    app.use(apiBasePath+"/"+"order",    passport.authenticate('jwt', {session: false}), orderRoutes);
 
     app.get("/*", function (req, res, next) {
         return res.sendFile(
