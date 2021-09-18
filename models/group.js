@@ -35,7 +35,7 @@ const groupCollectionSchema = new Schema({
             message: props => { console.log(props); return `${props.value} is not a valid user id!`}
 		}
     }
-},{
+}, {
     writeConcern: "majority"
     // toJSON: { virtuals: true },
 });

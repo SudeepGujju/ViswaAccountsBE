@@ -1,12 +1,12 @@
 const router = require('express').Router();
 const { validate, InventoryModel, InventoryType, CashRCredit } = require('../models/inventory');
 const { parseError } = require('../utils/error');
-const { parseDate, formatDate} = require('../utils/format');
+const { parseDate, formatDate, parseCSVDate} = require('../utils/format');
 const { readCSVFile, deleteFile } = require('../utils/file');
 
 const { FileFormats, UploadMiddleware } = require('../utils/file-upload');
 
-const uploadConfig = { DestinationPath: global.tempPath, UseOriginalFileName: false, AllowedFileFormats: [FileFormats.CSV, FileFormats.XLS] };
+const uploadConfig = { DestinationPath: global.tempPath, UploadFileToUserFolder: false, UseOriginalFileName: false, AllowedFileFormats: [FileFormats.CSV, FileFormats.XLS] };
 const uploadInventoryFile = UploadMiddleware(uploadConfig);
 
 router.get("/search", async function (req, res) {
@@ -268,55 +268,62 @@ module.exports = router;
 
 function parseCSVInventory(results){
 
-    if(!results)
-        results = [];
+    // eslint-disable-next-line no-useless-catch
+    try{
 
-    if(results.length == 0)
-        return [];
+        if(!results)
+            results = [];
 
-    results = results.map((x) => {
+        if(results.length == 0)
+            return [];
+     
+        results = results.map((x) => {
 
-        let inventory = {};
+            let inventory = {};
 
-        switch(x.TYPE.trim().toUpperCase())
-        {
-            case "SALES":           inventory.invntryType = InventoryType.Sale; break;
-            case "PURCHASE":        inventory.invntryType = InventoryType.Purchase; break;
-            case "SALERETURN":      inventory.invntryType = InventoryType.SaleReturn; break;
-            case "SALERETURN":      inventory.invntryType = InventoryType.PurchaseReturn; break;
-            case "OTHER":           inventory.invntryType = InventoryType.Other; break;
-        }
+            switch(x.TYPE.trim().toUpperCase())
+            {
+                case "SALES":           inventory.invntryType = InventoryType.Sale; break;
+                case "PURCHASE":        inventory.invntryType = InventoryType.Purchase; break;
+                case "SALERETURN":      inventory.invntryType = InventoryType.SaleReturn; break;
+                case "PURCHASERETURN":  inventory.invntryType = InventoryType.PurchaseReturn; break;
+                case "OTHER":           inventory.invntryType = InventoryType.Other; break;
+            }
 
-        switch(x.FCRDR.trim().toUpperCase())
-        {
-            case "R":        inventory.cashRcredit = CashRCredit.Credit; break;
-            case "C":        inventory.cashRcredit = CashRCredit.Cash; break;
-        }
+            switch(x.FCRDR.trim().toUpperCase())
+            {
+                case "R":        inventory.cashRcredit = CashRCredit.Credit; break;
+                case "C":        inventory.cashRcredit = CashRCredit.Cash; break;
+            }
 
-        inventory.SL = x.SLNO;
-        inventory.date = parseDate(x.DATE);
-        inventory.fromCode = x.GLCODE;
-        inventory.toCode = x.CODE1;
-        inventory.invcNo = x.INVNO;
-        inventory.invcDate = parseDate(x.INVDATE);
-        inventory.fiveAmt = isNaN(x.AMT5) ? '0.00' : parseFloat(x.AMT5).toFixed(2);
-        inventory.fivePerAmt = isNaN(x.TAX5) ? '0.00' : parseFloat(x.TAX5).toFixed(2);
-        inventory.twelveAmt = isNaN(x.AMT12) ? '0.00' : parseFloat(x.AMT12).toFixed(2);
-        inventory.twelvePerAmt = isNaN(x.TAX12) ? '0.00' : parseFloat(x.TAX12).toFixed(2);
-        inventory.eighteenAmt = isNaN(x.AMT18) ? '0.00' : parseFloat(x.AMT18).toFixed(2);
-        inventory.eighteenPerAmt = isNaN(x.TAX18) ? '0.00' : parseFloat(x.TAX18).toFixed(2);
-        inventory.twntyEightAmt = isNaN(x.AMT28) ? '0.00' : parseFloat(x.AMT28).toFixed(2);
-        inventory.twntyEightPerAmt = isNaN(x.TAX28) ? '0.00' : parseFloat(x.TAX28).toFixed(2);
-        inventory.zeroAmt = isNaN(x.AMT0) ? '0.00' : parseFloat(x.AMT0).toFixed(2);
-        inventory.totalAmt = isNaN(x.TAMT) ? '0.00' : parseFloat(x.TAMT).toFixed(2);
-        inventory.totalPerAmt = isNaN(x.TTAX) ? '0.00' : parseFloat(x.TTAX).toFixed(2);
-        inventory.roundingAmt = isNaN(x.ROUN) ? '0.00' : parseFloat(x.ROUN).toFixed(2);
-        inventory.totalInvcAmt = isNaN(x.INVAMT) ? '0.00' : parseFloat(x.INVAMT).toFixed(2);
+            inventory.SL = x.SLNO;
+            inventory.date = parseCSVDate(x.DATE);
+            inventory.fromCode = x.GLCODE;
+            inventory.toCode = x.CODE1;
+            inventory.invcNo = x.INVNO;
+            inventory.invcDate = parseCSVDate(x.INVDATE);
+            inventory.fiveAmt = isNaN(x.AMT5) ? '0.00' : parseFloat(x.AMT5).toFixed(2);
+            inventory.fivePerAmt = isNaN(x.TAX5) ? '0.00' : parseFloat(x.TAX5).toFixed(2);
+            inventory.twelveAmt = isNaN(x.AMT12) ? '0.00' : parseFloat(x.AMT12).toFixed(2);
+            inventory.twelvePerAmt = isNaN(x.TAX12) ? '0.00' : parseFloat(x.TAX12).toFixed(2);
+            inventory.eighteenAmt = isNaN(x.AMT18) ? '0.00' : parseFloat(x.AMT18).toFixed(2);
+            inventory.eighteenPerAmt = isNaN(x.TAX18) ? '0.00' : parseFloat(x.TAX18).toFixed(2);
+            inventory.twntyEightAmt = isNaN(x.AMT28) ? '0.00' : parseFloat(x.AMT28).toFixed(2);
+            inventory.twntyEightPerAmt = isNaN(x.TAX28) ? '0.00' : parseFloat(x.TAX28).toFixed(2);
+            inventory.zeroAmt = isNaN(x.AMT0) ? '0.00' : parseFloat(x.AMT0).toFixed(2);
+            inventory.totalAmt = isNaN(x.TAMT) ? '0.00' : parseFloat(x.TAMT).toFixed(2);
+            inventory.totalPerAmt = isNaN(x.TTAX) ? '0.00' : parseFloat(x.TTAX).toFixed(2);
+            inventory.roundingAmt = isNaN(x.ROUN) ? '0.00' : parseFloat(x.ROUN).toFixed(2);
+            inventory.totalInvcAmt = isNaN(x.INVAMT) ? '0.00' : parseFloat(x.INVAMT).toFixed(2);
 
-        return inventory;
-    });
+            return inventory;
+        });
 
-    return results;
+        return results;  
+ 
+    }catch(e){
+        throw e;
+    }
 
 }
 
@@ -352,6 +359,7 @@ async function createInventories(records, userId, finYearStart, finYearEnd){
         }
         finally
         {
+            // eslint-disable-next-line no-unsafe-finally
             return status;
         }
 

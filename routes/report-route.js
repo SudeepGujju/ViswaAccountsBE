@@ -2,16 +2,23 @@ const router    = require('express').Router();
 const fs        = require('fs');
 const csv       = require('csv-parser');
 const { getFilesList, isFileExists } = require('../utils/file');
+const path      = require('path');
 
 router.get("/fileList", async function(req, res){
 
     try
     {
+        /*
         let loginID = req.user.loginID.substr(0, 3);
 
         let data = await getFilesList();
 
         let filesList = data.filter( x => x.endsWith(".csv") && x.startsWith(loginID) );
+
+        return res.status(200).send(filesList);
+        */
+
+        const filesList = await getFilesList(path.join(global.uploadPath, req.user.loginID));
 
         return res.status(200).send(filesList);
     }
@@ -76,10 +83,9 @@ router.get("/fileData", async function(req, res){
 
 function groupBy(records, keysArr, vGroupCountReq=false)
 {
-    let processedData = [];
+    let helper = {};
 
-    let helper = {}
-    processedData = records.reduce((result, current)=>{
+    let processedData = records.reduce((result, current)=>{
 
         const keys = [];
         keysArr.forEach((v, i)=>{

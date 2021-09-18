@@ -21,7 +21,10 @@ module.exports.validateRefFld = (userId, model, name, value) => {
 			if (result) {
 				return resolve(true);
             }
-			else return reject(new Error(`FK Constraint '${model.modelName}' for '${value.toString()}' failed`));
+			else{
+				// return reject(new Error(`FK Constraint '${model.modelName}' for '${value.toString()}' failed`));
+				return reject(new Error(`FK Constraint failed for value '${value.toString()}' in '${model.modelName}' collection.`));
+			}
 		});
 	});
 };

@@ -3,6 +3,7 @@ const { ActiveUsersModel } = require('../models/active-users');
 
 module.exports = function() {
 
+    // @ts-ignore
     global.tasks.userMaintainance = scheduleJob('*/5 * * * * *', async function(params) {
 
         try{
@@ -11,6 +12,7 @@ module.exports = function() {
                     '$project': { 'inActiveTime': {'$trunc': {'$divide': [{ '$subtract': [ new Date(), '$lastAccessed' ] }, 1000 ]} }, _id: 1 }
                 },
                 {
+                    // @ts-ignore
                     '$match': {"inActiveTime": {'$gt': global.sessionValidityInSecs*2 } }
                 },
                 {

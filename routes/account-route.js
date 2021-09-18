@@ -6,7 +6,7 @@ const { readCSVFile, deleteFile } = require('../utils/file');
 
 const { FileFormats, UploadMiddleware } = require('../utils/file-upload');
 
-const uploadConfig = { DestinationPath: global.tempPath, UseOriginalFileName: false, AllowedFileFormats: [FileFormats.CSV, FileFormats.XLS] };
+const uploadConfig = { DestinationPath: global.tempPath, UploadFileToUserFolder: false, UseOriginalFileName: false, AllowedFileFormats: [FileFormats.CSV, FileFormats.XLS] };
 const uploadAccountFile = UploadMiddleware(uploadConfig);
 
 router.get("/dropdown", async function (req, res) {
@@ -353,6 +353,7 @@ async function createAccounts(records, userId){
         }
         finally
         {
+            // eslint-disable-next-line no-unsafe-finally
             return status;
         }
 

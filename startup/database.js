@@ -19,7 +19,7 @@ const mongooseOptions = {
 
 // const url = "mongodb://localhost:27017/";
 // const dbURI = "mongodb://viswa:viswa.2626@localhost:27017/viswaaccounts?authSource=admin";
-const dbURI = "mongodb://viswa:viswa.2626@localhost:27017/viswaaccounts?authSource=admin&replicaSet=mongo-viswaaccounts-replica";
+const dbURI = "mongodb://viswa:viswa.2626@localhost:27017,localhost:27018,localhost:27019/viswaaccounts?authSource=admin&replicaSet=mongo-viswaaccounts-replica";
 
 module.exports = function(){
 

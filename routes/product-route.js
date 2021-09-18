@@ -4,7 +4,7 @@ const { validate, ProductModel } = require('../models/product');
 const { readCSVFile, deleteFile } = require('../utils/file');
 const { FileFormats, UploadMiddleware } = require('../utils/file-upload');
 
-const uploadConfig = { DestinationPath: global.tempPath, UseOriginalFileName: false, AllowedFileFormats: [FileFormats.CSV, FileFormats.XLS] };
+const uploadConfig = { DestinationPath: global.tempPath, UploadFileToUserFolder: false, UseOriginalFileName: false, AllowedFileFormats: [FileFormats.CSV, FileFormats.XLS] };
 const uploadProductFile = UploadMiddleware(uploadConfig);
 
 router.get("/search/user", async function (req, res) {
@@ -63,7 +63,7 @@ router.post("/upload", uploadProductFile.single('file'), async function(req, res
 
         if(data.length > 0)
         {
-            const deleteStatus = await ProductModel.deleteMany({userId: req.user._id});
+            await ProductModel.deleteMany({userId: req.user._id});
 
             // console.log(deleteStatus);
 
@@ -184,6 +184,7 @@ async function createProducts(records, userId){
         }
         finally
         {
+            // eslint-disable-next-line no-unsafe-finally
             return status;
         }
 

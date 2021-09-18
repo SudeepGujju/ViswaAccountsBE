@@ -151,8 +151,8 @@ async function isLoginIDAvailabile(loginID) {
     let bUserAvail = true;
 
     try {
-        if (loginID)
-            loginID = loginID.trim().toUpperCase();
+        //if (loginID)
+        //    loginID = loginID.trim().toUpperCase();
 
         let user = await UserModel.findOne({ 'loginID': loginID });
 

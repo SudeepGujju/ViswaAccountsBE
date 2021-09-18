@@ -66,9 +66,26 @@ module.exports = function (app) {
     */
   //app.disable('x-powered-by');
 
+  
+  // app.use(function (req, res, next) {
+  //   res.setHeader(
+  //     'Content-Security-Policy',
+  //     "default-src 'self'; connect-src 'self' https://fonts.gstatic.com;"
+  //   );
+  //   next();
+  // });
+
   app.use(helmet());
-  app.disable('x-powered-by');
+  // app.use(
+  //   helmet.contentSecurityPolicy({
+  //     directives: {
+  //       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+  //       "connect-src": ["'self'", "https:", "data:"]
+  //     },
+  //   })
+  // );
   // app.use(helmet({contentSecurityPolicy: false}));
+  app.disable('x-powered-by');
 
   app.use(compression());
 
@@ -97,4 +114,12 @@ module.exports = function (app) {
   require('./passport-config')(passport);
 
   app.use(passport.initialize());
+
+  // app.use(function(req, res, next){
+
+  //   console.log(`request received on process ${process.pid}`);
+
+  //   next();
+
+  // });
 };

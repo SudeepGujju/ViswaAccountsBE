@@ -66,6 +66,7 @@ router.post("/logout", async function(req, res){
 
 	try
 	{
+		//No need to wait until logged out successfully.
 		ActiveUsersModel.deleteOne({'accessToken': getParsedSchemaToken(req) }).exec();
 	}
 	catch(e)
@@ -95,7 +96,7 @@ router.post("/refresh", async function(req, res){
 
 		try
 		{
-			jwt.verify(oldAcessToken, global.publicKey, {algorithm: global.tokenAlgorithm} );
+			jwt.verify(oldAcessToken, global.publicKey, {algorithms: [global.tokenAlgorithm]} );
 		}
 		catch(e)
 		{

@@ -1,11 +1,14 @@
 const multer = require('multer');
 const { InvalidFileFormatError } = require('./error');
+const fs = require('fs');
+const path = require('path');
 
 module.exports.UploadMiddleware = function (uploadConfig={}) {
 
     let vDestinationPath = uploadConfig.DestinationPath || global.tempPath;
     let vUseOriginalFileName = uploadConfig.UseOriginalFileName || true;
     let vAllowedFileFormats = uploadConfig.AllowedFileFormats || [];
+    let vUploadFileToUserFolder = uploadConfig.UploadFileToUserFolder || false;
 
     let filename = null;
 
@@ -18,7 +21,23 @@ module.exports.UploadMiddleware = function (uploadConfig={}) {
 
     let diskStorage = multer.diskStorage({
         destination: function (req, file, cb) {
-            cb(null, vDestinationPath);
+
+            if(vUploadFileToUserFolder){
+                let vFolderPath = path.join(vDestinationPath, req.user.loginID);
+
+                fs.mkdir(vFolderPath, function(err){
+
+                    if(err && err.code != 'EEXIST'){
+                        return cb(err);
+                    }
+
+                    return cb(null, vFolderPath);
+                });
+
+                return;
+            }
+
+            return cb(null, vDestinationPath);
         },
         filename: filename
     });
@@ -29,7 +48,6 @@ module.exports.UploadMiddleware = function (uploadConfig={}) {
         {
             if( vAllowedFileFormats.indexOf(file.mimetype) == -1 )
             {
-                cb(null ,false);
                 return cb(new InvalidFileFormatError(`Only ${vAllowedFileFormats.join(', ')} files are allowed`));
             }
 

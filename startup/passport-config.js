@@ -8,7 +8,7 @@ const options = {
   secretOrKey: global.publicKey,
   //@ts-ignore
   algorithms: [global.tokenAlgorithm],
-  ignoreExpiration: false,
+  ignoreExpiration: true,
   passReqToCallback: true,
 };
 
@@ -30,6 +30,7 @@ module.exports = function (passport) {
         return cb(err, false);
       }
 
+      // @ts-ignore
       activeUser.lastAccessed = new Date();
 
       try {
